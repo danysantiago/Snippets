@@ -1,0 +1,1079 @@
+Rem Project: Blocks
+Rem Created: 6/3/2006 9:25:55 PM
+
+Rem ***** Main Source File *****
+
+Rem Variables
+Bouncerx = 280
+Ballx = 308
+Bally = 228
+BallDir = 1
+Ballspeed = 1
+Bouncerspeed = 1
+Lives = 3
+Level = 1
+Blocks = 0
+BlockOut = 100
+
+Rem Settings
+sync on: sync rate 200
+set display mode 640,480,16
+hide mouse
+
+Rem Media Files
+load image "Ball.png", 1, 1
+load image "Bouncer.png", 2, 1
+load image "BounceWall.png", 3, 1
+load image "BounceWall2.png", 4 , 1
+load image "UpperBar.png", 5, 1
+load image "GameOver.png", 6, 1
+load image "RedBlock.png", 7, 1
+load image "OrangeBlock.png", 8, 1
+load image "YellowBlock.png", 9, 1
+load image "GreenBlock.png", 10, 1
+load image "LightBlueBlock.png", 11, 1
+load image "BlueBlock.png", 12, 1
+load image "PurpleBlock.png", 13, 1
+load image "SilverBlock.png", 14, 1
+load image "#1.png", 15, 1
+load image "#2.png", 16, 1
+load image "#3.png", 17, 1
+load image "#4.png", 18, 1
+load image "#5.png", 19, 1
+load image "Pause.png", 20, 1
+load image "Congrats.png", 21, 1
+load sound "Ball.wav", 1
+load sound "BallDies.wav", 2
+load sound "GameOver.wav", 3
+load sound "LevelPass.wav", 4
+load sound "EndGame.wav", 5
+
+sprite 3, 0, 0, 3
+sprite 4, 639, 0, 3
+sprite 5, 0, 20, 4
+sprite 6, 0, 0, 5
+sprite 7, 6, 3, 1
+sprite 8, 21, 3, 1
+sprite 9, 36, 3, 1
+
+LevelSet:
+
+Rem Level Block Set
+
+if Level = 1
+   Blocks = 45
+   sprite 131, 580, 7, 15
+   sprite 11, 13, 25, 7
+   sprite 12, 54, 25, 7
+   sprite 13, 95, 25, 7
+   sprite 14, 136, 25, 7
+   sprite 15, 177, 25, 7
+   sprite 16, 218, 25, 7
+   sprite 17, 259, 25, 7
+   sprite 18, 300, 25, 7
+   sprite 19, 341, 25, 7
+   sprite 20, 382, 25, 7
+   sprite 21, 423, 25, 7
+   sprite 22, 464, 25, 7
+   sprite 23, 505, 25, 7
+   sprite 24, 546, 25, 7
+   sprite 25, 587, 25, 7
+   sprite 26, 13, 42, 8
+   sprite 27, 54, 42, 8
+   sprite 28, 95, 42, 8
+   sprite 29, 136, 42, 8
+   sprite 30, 177, 42, 8
+   sprite 31, 218, 42, 8
+   sprite 32, 259, 42, 8
+   sprite 33, 300, 42, 8
+   sprite 34, 341, 42, 8
+   sprite 35, 382, 42, 8
+   sprite 36, 423, 42, 8
+   sprite 37, 464, 42, 8
+   sprite 38, 505, 42, 8
+   sprite 39, 546, 42, 8
+   sprite 40, 587, 42, 8
+   sprite 41, 13, 59, 9
+   sprite 42, 54, 59, 9
+   sprite 43, 95, 59, 9
+   sprite 44, 136, 59, 9
+   sprite 45, 177, 59, 9
+   sprite 46, 218, 59, 9
+   sprite 47, 259, 59, 9
+   sprite 48, 300, 59, 9
+   sprite 49, 341, 59, 9
+   sprite 50, 382, 59, 9
+   sprite 51, 423, 59, 9
+   sprite 52, 464, 59, 9
+   sprite 53, 505, 59, 9
+   sprite 54, 546, 59, 9
+   sprite 55, 587, 59, 9
+
+   sprite 56, 13, 76, 10
+   sprite 57, 54, 76, 10
+   sprite 58, 95, 76, 10
+   sprite 59, 136, 76, 10
+   sprite 60, 177, 76, 10
+   sprite 61, 218, 76, 10
+   sprite 62, 259, 76, 10
+   sprite 63, 300, 76, 10
+   sprite 64, 341, 76, 10
+   sprite 65, 382, 76, 10
+   sprite 66, 423, 76, 10
+   sprite 67, 464, 76, 10
+   sprite 68, 505, 76, 10
+   sprite 69, 546, 76, 10
+   sprite 70, 587, 76, 10
+   sprite 71, 13, 93, 11
+   sprite 72, 54, 93, 11
+   sprite 73, 95, 93, 11
+   sprite 74, 136, 93, 11
+   sprite 75, 177, 93, 11
+   sprite 76, 218, 93, 11
+   sprite 77, 259, 93, 11
+   sprite 78, 300, 93, 11
+   sprite 79, 341, 93, 11
+   sprite 80, 382, 93, 11
+   sprite 81, 423, 93, 11
+   sprite 82, 464, 93, 11
+   sprite 83, 505, 93, 11
+   sprite 84, 546, 93, 11
+   sprite 85, 587, 93, 11
+   sprite 86, 13, 110, 12
+   sprite 87, 54, 110, 12
+   sprite 88, 95, 110, 12
+   sprite 89, 136, 110, 12
+   sprite 90, 177, 110, 12
+   sprite 91, 218, 110, 12
+   sprite 92, 259, 110, 12
+   sprite 93, 300, 110, 12
+   sprite 94, 341, 110, 12
+   sprite 95, 382, 110, 12
+   sprite 96, 423, 110, 12
+   sprite 97, 464, 110, 12
+   sprite 98, 505, 110, 12
+   sprite 99, 546, 110, 12
+   sprite 100, 587, 110, 12
+   sprite 101, 13, 127, 13
+   sprite 102, 54, 127, 13
+   sprite 103, 95, 127, 13
+   sprite 104, 136, 127, 13
+   sprite 105, 177, 127, 13
+   sprite 106, 218, 127, 13
+   sprite 107, 259, 127, 13
+   sprite 108, 300, 127, 13
+   sprite 109, 341, 127, 13
+   sprite 110, 382, 127, 13
+   sprite 111, 423, 127, 13
+   sprite 112, 464, 127, 13
+   sprite 113, 505, 127, 13
+   sprite 114, 546, 127, 13
+   sprite 115, 587, 127, 13
+   sprite 116, 13, 144, 14
+   sprite 117, 54, 144, 14
+   sprite 118, 95, 144, 14
+   sprite 119, 136, 144, 14
+   sprite 120, 177, 144, 14
+   sprite 121, 218, 144, 14
+   sprite 122, 259, 144, 14
+   sprite 123, 300, 144, 14
+   sprite 124, 341, 144, 14
+   sprite 125, 382, 144, 14
+   sprite 126, 423, 144, 14
+   sprite 127, 464, 144, 14
+   sprite 128, 505, 144, 14
+   sprite 129, 546, 144, 14
+   sprite 130, 587, 144, 14
+
+   delete sprite 56
+   delete sprite 57
+   delete sprite 58
+   delete sprite 59
+   delete sprite 60
+   delete sprite 61
+   delete sprite 62
+   delete sprite 63
+   delete sprite 64
+   delete sprite 65
+   delete sprite 66
+   delete sprite 67
+   delete sprite 68
+   delete sprite 69
+   delete sprite 70
+   delete sprite 71
+   delete sprite 72
+   delete sprite 73
+   delete sprite 74
+   delete sprite 75
+   delete sprite 76
+   delete sprite 77
+   delete sprite 78
+   delete sprite 79
+   delete sprite 80
+   delete sprite 81
+   delete sprite 82
+   delete sprite 83
+   delete sprite 84
+   delete sprite 85
+   delete sprite 86
+   delete sprite 87
+   delete sprite 88
+   delete sprite 89
+   delete sprite 90
+   delete sprite 91
+   delete sprite 92
+   delete sprite 93
+   delete sprite 94
+   delete sprite 95
+   delete sprite 96
+   delete sprite 97
+   delete sprite 98
+   delete sprite 99
+   delete sprite 100
+   delete sprite 101
+   delete sprite 102
+   delete sprite 103
+   delete sprite 104
+   delete sprite 105
+   delete sprite 106
+   delete sprite 107
+   delete sprite 108
+   delete sprite 109
+   delete sprite 110
+   delete sprite 111
+   delete sprite 112
+   delete sprite 113
+   delete sprite 114
+   delete sprite 115
+   delete sprite 116
+   delete sprite 117
+   delete sprite 118
+   delete sprite 119
+   delete sprite 120
+   delete sprite 121
+   delete sprite 122
+   delete sprite 123
+   delete sprite 124
+   delete sprite 125
+   delete sprite 126
+   delete sprite 127
+   delete sprite 128
+   delete sprite 129
+   delete sprite 130
+
+endif
+
+if Level = 2
+   Blocks = 61
+   sprite 131, 580, 6, 16
+   sprite 12, 54, 25, 7
+   sprite 13, 95, 25, 7
+   sprite 14, 136, 25, 7
+   sprite 15, 177, 25, 7
+   sprite 16, 218, 25, 7
+   sprite 17, 259, 25, 7
+   sprite 18, 300, 25, 7
+   sprite 19, 341, 25, 7
+   sprite 20, 382, 25, 7
+   sprite 21, 423, 25, 7
+   sprite 22, 464, 25, 7
+   sprite 23, 505, 25, 7
+   sprite 24, 546, 25, 7
+   sprite 27, 54, 42, 8
+   sprite 28, 95, 42, 8
+   sprite 29, 136, 42, 8
+   sprite 30, 177, 42, 8
+   sprite 31, 218, 42, 8
+   sprite 32, 259, 42, 8
+   sprite 33, 300, 42, 8
+   sprite 34, 341, 42, 8
+   sprite 35, 382, 42, 8
+   sprite 36, 423, 42, 8
+   sprite 37, 464, 42, 8
+   sprite 38, 505, 42, 8
+   sprite 39, 546, 42, 8
+   sprite 42, 54, 59, 9
+   sprite 43, 95, 59, 9
+   sprite 44, 136, 59, 9
+   sprite 45, 177, 59, 9
+   sprite 46, 218, 59, 9
+   sprite 47, 259, 59, 9
+   sprite 48, 300, 59, 9
+   sprite 49, 341, 59, 9
+   sprite 50, 382, 59, 9
+   sprite 51, 423, 59, 9
+   sprite 52, 464, 59, 9
+   sprite 53, 505, 59, 9
+   sprite 54, 546, 59, 9
+   sprite 56, 13, 76, 10
+   sprite 57, 54, 76, 10
+   sprite 58, 95, 76, 10
+   sprite 59, 136, 76, 10
+   sprite 60, 177, 76, 10
+   sprite 61, 218, 76, 10
+   sprite 62, 259, 76, 10
+   sprite 63, 300, 76, 10
+   sprite 64, 341, 76, 10
+   sprite 65, 382, 76, 10
+   sprite 66, 423, 76, 10
+   sprite 67, 464, 76, 10
+   sprite 68, 505, 76, 10
+   sprite 69, 546, 76, 10
+   sprite 70, 587, 76, 10
+   sprite 72, 54, 93, 11
+   sprite 74, 136, 93, 11
+   sprite 76, 218, 93, 11
+   sprite 78, 300, 93, 11
+   sprite 80, 382, 93, 11
+   sprite 82, 464, 93, 11
+   sprite 84, 546, 93, 11
+   sync
+   sleep 1500
+
+endif
+
+if Level = 3
+   Blocks = 75
+   sprite 131, 580, 5, 17
+   sprite 11, 13, 25, 7
+   sprite 13, 95, 25, 7
+   sprite 15, 177, 25, 7
+   sprite 17, 259, 25, 7
+   sprite 19, 341, 25, 7
+   sprite 21, 423, 25, 7
+   sprite 23, 505, 25, 7
+   sprite 25, 587, 25, 7
+   sprite 27, 54, 42, 8
+   sprite 29, 136, 42, 8
+   sprite 31, 218, 42, 8
+   sprite 33, 300, 42, 8
+   sprite 35, 382, 42, 8
+   sprite 37, 464, 42, 8
+   sprite 39, 546, 42, 8
+   sprite 41, 13, 59, 9
+   sprite 42, 54, 59, 9
+   sprite 43, 95, 59, 9
+   sprite 44, 136, 59, 9
+   sprite 45, 177, 59, 9
+   sprite 46, 218, 59, 9
+   sprite 47, 259, 59, 9
+   sprite 48, 300, 59, 9
+   sprite 49, 341, 59, 9
+   sprite 50, 382, 59, 9
+   sprite 51, 423, 59, 9
+   sprite 52, 464, 59, 9
+   sprite 53, 505, 59, 9
+   sprite 54, 546, 59, 9
+   sprite 55, 587, 59, 9
+   sprite 56, 13, 76, 10
+   sprite 57, 54, 76, 10
+   sprite 58, 95, 76, 10
+   sprite 59, 136, 76, 10
+   sprite 60, 177, 76, 10
+   sprite 61, 218, 76, 10
+   sprite 62, 259, 76, 10
+   sprite 63, 300, 76, 10
+   sprite 64, 341, 76, 10
+   sprite 65, 382, 76, 10
+   sprite 66, 423, 76, 10
+   sprite 67, 464, 76, 10
+   sprite 68, 505, 76, 10
+   sprite 69, 546, 76, 10
+   sprite 70, 587, 76, 10
+   sprite 71, 13, 93, 11
+   sprite 72, 54, 93, 11
+   sprite 73, 95, 93, 11
+   sprite 74, 136, 93, 11
+   sprite 75, 177, 93, 11
+   sprite 76, 218, 93, 11
+   sprite 77, 259, 93, 11
+   sprite 78, 300, 93, 11
+   sprite 79, 341, 93, 11
+   sprite 80, 382, 93, 11
+   sprite 81, 423, 93, 11
+   sprite 82, 464, 93, 11
+   sprite 83, 505, 93, 11
+   sprite 84, 546, 93, 11
+   sprite 85, 587, 93, 11
+   sprite 87, 54, 110, 12
+   sprite 89, 136, 110, 12
+   sprite 91, 218, 110, 12
+   sprite 93, 300, 110, 12
+   sprite 95, 382, 110, 12
+   sprite 97, 464, 110, 12
+   sprite 99, 546, 110, 12
+   sprite 101, 13, 127, 13
+   sprite 103, 95, 127, 13
+   sprite 105, 177, 127, 13
+   sprite 107, 259, 127, 13
+   sprite 109, 341, 127, 13
+   sprite 111, 423, 127, 13
+   sprite 113, 505, 127, 13
+   sprite 115, 587, 127, 13
+   sync
+   sleep 1500
+
+endif
+
+if Level = 4
+   Blocks = 105
+   sprite 131, 580, 5, 18
+   sprite 11, 13, 25, 7
+   sprite 12, 54, 25, 7
+   sprite 13, 95, 25, 7
+   sprite 14, 136, 25, 7
+   sprite 15, 177, 25, 7
+   sprite 16, 218, 25, 7
+   sprite 17, 259, 25, 7
+   sprite 18, 300, 25, 7
+   sprite 19, 341, 25, 7
+   sprite 20, 382, 25, 7
+   sprite 21, 423, 25, 7
+   sprite 22, 464, 25, 7
+   sprite 23, 505, 25, 7
+   sprite 24, 546, 25, 7
+   sprite 25, 587, 25, 7
+   sprite 26, 13, 42, 8
+   sprite 27, 54, 42, 8
+   sprite 28, 95, 42, 8
+   sprite 29, 136, 42, 8
+   sprite 30, 177, 42, 8
+   sprite 31, 218, 42, 8
+   sprite 32, 259, 42, 8
+   sprite 33, 300, 42, 8
+   sprite 34, 341, 42, 8
+   sprite 35, 382, 42, 8
+   sprite 36, 423, 42, 8
+   sprite 37, 464, 42, 8
+   sprite 38, 505, 42, 8
+   sprite 39, 546, 42, 8
+   sprite 40, 587, 42, 8
+   sprite 41, 13, 59, 9
+   sprite 42, 54, 59, 9
+   sprite 43, 95, 59, 9
+   sprite 44, 136, 59, 9
+   sprite 45, 177, 59, 9
+   sprite 46, 218, 59, 9
+   sprite 47, 259, 59, 9
+   sprite 48, 300, 59, 9
+   sprite 49, 341, 59, 9
+   sprite 50, 382, 59, 9
+   sprite 51, 423, 59, 9
+   sprite 52, 464, 59, 9
+   sprite 53, 505, 59, 9
+   sprite 54, 546, 59, 9
+   sprite 55, 587, 59, 9
+   sprite 56, 13, 76, 10
+   sprite 57, 54, 76, 10
+   sprite 58, 95, 76, 10
+   sprite 59, 136, 76, 10
+   sprite 60, 177, 76, 10
+   sprite 61, 218, 76, 10
+   sprite 62, 259, 76, 10
+   sprite 63, 300, 76, 10
+   sprite 64, 341, 76, 10
+   sprite 65, 382, 76, 10
+   sprite 66, 423, 76, 10
+   sprite 67, 464, 76, 10
+   sprite 68, 505, 76, 10
+   sprite 69, 546, 76, 10
+   sprite 70, 587, 76, 10
+   sprite 71, 13, 93, 11
+   sprite 72, 54, 93, 11
+   sprite 73, 95, 93, 11
+   sprite 74, 136, 93, 11
+   sprite 75, 177, 93, 11
+   sprite 76, 218, 93, 11
+   sprite 77, 259, 93, 11
+   sprite 78, 300, 93, 11
+   sprite 79, 341, 93, 11
+   sprite 80, 382, 93, 11
+   sprite 81, 423, 93, 11
+   sprite 82, 464, 93, 11
+   sprite 83, 505, 93, 11
+   sprite 84, 546, 93, 11
+   sprite 85, 587, 93, 11
+   sprite 86, 13, 110, 12
+   sprite 87, 54, 110, 12
+   sprite 88, 95, 110, 12
+   sprite 89, 136, 110, 12
+   sprite 90, 177, 110, 12
+   sprite 91, 218, 110, 12
+   sprite 92, 259, 110, 12
+   sprite 93, 300, 110, 12
+   sprite 94, 341, 110, 12
+   sprite 95, 382, 110, 12
+   sprite 96, 423, 110, 12
+   sprite 97, 464, 110, 12
+   sprite 98, 505, 110, 12
+   sprite 99, 546, 110, 12
+   sprite 100, 587, 110, 12
+   sync
+   sprite 101, 13, 127, 13
+   sprite 102, 54, 127, 13
+   sprite 103, 95, 127, 13
+   sprite 104, 136, 127, 13
+   sprite 105, 177, 127, 13
+   sprite 106, 218, 127, 13
+   sprite 107, 259, 127, 13
+   sprite 108, 300, 127, 13
+   sprite 109, 341, 127, 13
+   sprite 110, 382, 127, 13
+   sprite 111, 423, 127, 13
+   sprite 112, 464, 127, 13
+   sprite 113, 505, 127, 13
+   sprite 114, 546, 127, 13
+   sprite 115, 587, 127, 13
+   sync
+   sleep 1500
+
+endif
+
+if Level = 5
+   Blocks = 81
+   sprite 131, 580, 5, 19
+   sprite 11, 13, 25, 7
+   sprite 12, 54, 25, 7
+   sprite 13, 95, 25, 7
+   sprite 14, 136, 25, 7
+   sprite 15, 177, 25, 7
+   sprite 16, 218, 25, 7
+   sprite 17, 259, 25, 7
+   sprite 18, 300, 25, 7
+   sprite 19, 341, 25, 7
+   sprite 20, 382, 25, 7
+   sprite 21, 423, 25, 7
+   sprite 22, 464, 25, 7
+   sprite 23, 505, 25, 7
+   sprite 24, 546, 25, 7
+   sprite 25, 587, 25, 7
+   sprite 26, 13, 42, 8
+   sprite 28, 95, 42, 8
+   sprite 29, 136, 42, 8
+   sprite 30, 177, 42, 8
+   sprite 32, 259, 42, 8
+   sprite 36, 423, 42, 8
+   sprite 40, 587, 42, 8
+   sprite 41, 13, 59, 9
+   sprite 43, 95, 59, 9
+   sprite 44, 136, 59, 9
+   sprite 45, 177, 59, 9
+   sprite 46, 218, 59, 9
+   sprite 47, 259, 59, 9
+   sprite 49, 341, 59, 9
+   sprite 50, 382, 59, 9
+   sprite 51, 423, 59, 9
+   sprite 52, 464, 59, 9
+   sprite 53, 505, 59, 9
+   sprite 55, 587, 59, 9
+   sprite 56, 13, 76, 10
+   sprite 58, 95, 76, 10
+   sprite 59, 136, 76, 10
+   sprite 60, 177, 76, 10
+   sprite 62, 259, 76, 10
+   sprite 64, 341, 76, 10
+   sprite 65, 382, 76, 10
+   sprite 66, 423, 76, 10
+   sprite 70, 587, 76, 10
+   sprite 71, 13, 93, 11
+   sprite 73, 95, 93, 11
+   sprite 74, 136, 93, 11
+   sprite 75, 177, 93, 11
+   sprite 77, 259, 93, 11
+   sprite 81, 423, 93, 11
+   sprite 83, 505, 93, 11
+   sprite 85, 587, 93, 11
+   sprite 86, 13, 110, 12
+   sprite 88, 95, 110, 12
+   sprite 89, 136, 110, 12
+   sprite 90, 177, 110, 12
+   sprite 92, 259, 110, 12
+   sprite 93, 300, 110, 12
+   sprite 94, 341, 110, 12
+   sprite 96, 423, 110, 12
+   sprite 98, 505, 110, 12
+   sprite 100, 587, 110, 12
+   sprite 101, 13, 127, 13
+   sprite 105, 177, 127, 13
+   sprite 107, 259, 127, 13
+   sprite 111, 423, 127, 13
+   sprite 115, 587, 127, 13
+   sprite 116, 13, 144, 14
+   sprite 117, 54, 144, 14
+   sprite 118, 95, 144, 14
+   sprite 119, 136, 144, 14
+   sprite 120, 177, 144, 14
+   sprite 121, 218, 144, 14
+   sprite 122, 259, 144, 14
+   sprite 123, 300, 144, 14
+   sprite 124, 341, 144, 14
+   sprite 125, 382, 144, 14
+   sprite 126, 423, 144, 14
+   sprite 127, 464, 144, 14
+   sprite 128, 505, 144, 14
+   sprite 129, 546, 144, 14
+   sprite 130, 587, 144, 14
+   sync
+   sleep 1500
+
+endif
+
+do
+
+Rem Bouncer
+if rightkey()=(1)
+   inc Bouncerx
+   inc Bouncerx
+
+   if Bouncerspeed = 2
+   inc Bouncerx
+   endif
+
+   if Bouncerspeed = 3
+   inc Bouncerx
+   inc Bouncerx
+   endif
+
+   if Bouncerspeed = 4
+   inc Bouncerx
+   inc Bouncerx
+   inc Bouncerx
+   endif
+
+endif
+
+if leftkey()=(1)
+   dec Bouncerx
+   dec Bouncerx
+
+   if Bouncerspeed = 2
+   dec Bouncerx
+   endif
+
+   if Bouncerspeed = 3
+   dec Bouncerx
+   dec Bouncerx
+   endif
+
+   if Bouncerspeed = 4
+   dec Bouncerx
+   dec Bouncerx
+   dec Bouncerx
+   endif
+
+endif
+
+Rem Player Boundarys
+if Bouncerx < 1 then Bouncerx = 1
+if Bouncerx > 579 then Bouncerx = 579
+
+sprite 2, Bouncerx, 457, 2
+
+Rem Ball
+if BallDir = 1
+   Ballx = Ballx + Ballspeed
+   Bally = Bally + Ballspeed
+   sprite 1, Ballx, Bally, 1
+endif
+
+if BallDir = 2
+   Ballx = Ballx + Ballspeed
+   Bally = Bally - Ballspeed
+   sprite 1, Ballx, Bally, 1
+endif
+
+if BallDir = 3
+   Ballx = Ballx - Ballspeed
+   Bally = Bally - Ballspeed
+   sprite 1, Ballx, Bally, 1
+endif
+
+if BallDir = 4
+   Ballx = Ballx - Ballspeed
+   Bally = Bally + Ballspeed
+   sprite 1, Ballx, Bally, 1
+endif
+
+Rem Ball Bounces in Player
+if Bally < 451
+   if sprite collision (1,2)
+      play sound 1
+      if BallDir = 1
+         BallDir = 2
+      endif
+
+      if BallDir = 4
+         BallDir = 3
+      endif
+   endif
+endif
+
+Rem Walls Bounce
+if sprite collision (1,4)
+   play sound 1
+   if BallDir = 2
+      BallDir = 3
+   endif
+
+   if BallDir = 1
+      BallDir = 4
+   endif
+endif
+
+if sprite collision (1,3)
+   play sound 1
+   if BallDir = 3
+      BallDir = 2
+   endif
+
+   if BallDir = 4
+      BallDir = 1
+   endif
+endif
+
+if sprite collision (1,5)
+   play sound 1
+   if BallDir = 3
+      BallDir = 4
+   endif
+
+   if BallDir = 2
+      BallDir = 1
+   endif
+endif
+
+Rem Ball Dies
+if Bally => 480
+   if Lives > 0
+      play sound 2
+      Lives = Lives -1
+      Bouncerx = 280
+      Ballx = 308
+      Bally = 228
+      if BallDir = 1
+         BallDir = 4
+      else
+         BallDir = 1
+      endif
+
+Rem Lives
+if Lives = 0
+   hide sprite 7
+   hide sprite 8
+   hide sprite 9
+endif
+
+if Lives = 1
+   sprite 7, 6, 3, 1
+   show sprite 7
+   hide sprite 8
+   hide sprite 9
+endif
+
+if Lives = 2
+   sprite 7, 6, 3, 1
+   sprite 8, 21, 3, 1
+   show sprite 7
+   show sprite 8
+   hide sprite 9
+endif
+
+if Lives = 3
+   sprite 7, 6, 3, 1
+   sprite 8, 21, 3, 1
+   sprite 9, 36, 3, 1
+   show sprite 7
+   show sprite 8
+   show sprite 9
+endif
+
+      sprite 1, Ballx, Bally, 1
+      sprite 2, Bouncerx, 457, 2
+      sync
+      sleep 1000
+   else
+      play sound 3
+      sprite 10, 240, 218, 6
+      show sprite 10
+      sync
+      sleep 5000
+      wait key
+      show all sprites
+      Bouncerx = 280
+      Ballx = 308
+      Bally = 228
+      BallDir = 1
+      Ballspeed = 1
+      Bouncerspeed = 1
+      Lives = 3
+      Level = 1
+      sync rate 180
+      hide sprite 10
+      goto LevelSet
+   endif
+endif
+
+Rem Level Pass & Check
+if Level = 5
+   if Blocks = 0
+   hide all sprites
+   play sound 5
+   endgame()
+   endif
+endif
+
+if Blocks = 0
+   Level = Level +1
+   play sound 4
+   Bouncerx = 280
+   Ballx = 308
+   Bally = 228
+   sprite 1, Ballx, Bally, 1
+   sprite 2, Bouncerx, 457, 2
+   sync
+   goto LevelSet
+endif
+
+Rem Block Collision
+if sprite collision (1,11) then BlockOut = 11
+if sprite collision (1,12) then BlockOut = 12
+if sprite collision (1,13) then BlockOut = 13
+if sprite collision (1,14) then BlockOut = 14
+if sprite collision (1,15) then BlockOut = 15
+if sprite collision (1,16) then BlockOut = 16
+if sprite collision (1,17) then BlockOut = 17
+if sprite collision (1,18) then BlockOut = 18
+if sprite collision (1,19) then BlockOut = 19
+if sprite collision (1,20) then BlockOut = 20
+if sprite collision (1,21) then BlockOut = 21
+if sprite collision (1,22) then BlockOut = 22
+if sprite collision (1,23) then BlockOut = 23
+if sprite collision (1,24) then BlockOut = 24
+if sprite collision (1,25) then BlockOut = 25
+if sprite collision (1,26) then BlockOut = 26
+if sprite collision (1,27) then BlockOut = 27
+if sprite collision (1,28) then BlockOut = 28
+if sprite collision (1,29) then BlockOut = 29
+if sprite collision (1,30) then BlockOut = 30
+if sprite collision (1,31) then BlockOut = 31
+if sprite collision (1,32) then BlockOut = 32
+if sprite collision (1,33) then BlockOut = 33
+if sprite collision (1,34) then BlockOut = 34
+if sprite collision (1,35) then BlockOut = 35
+if sprite collision (1,36) then BlockOut = 36
+if sprite collision (1,37) then BlockOut = 37
+if sprite collision (1,38) then BlockOut = 38
+if sprite collision (1,39) then BlockOut = 39
+if sprite collision (1,40) then BlockOut = 40
+if sprite collision (1,41) then BlockOut = 41
+if sprite collision (1,42) then BlockOut = 42
+if sprite collision (1,43) then BlockOut = 43
+if sprite collision (1,44) then BlockOut = 44
+if sprite collision (1,45) then BlockOut = 45
+if sprite collision (1,46) then BlockOut = 46
+if sprite collision (1,47) then BlockOut = 47
+if sprite collision (1,48) then BlockOut = 48
+if sprite collision (1,49) then BlockOut = 49
+if sprite collision (1,50) then BlockOut = 50
+if sprite collision (1,51) then BlockOut = 51
+if sprite collision (1,52) then BlockOut = 52
+if sprite collision (1,53) then BlockOut = 53
+if sprite collision (1,54) then BlockOut = 54
+if sprite collision (1,55) then BlockOut = 55
+if sprite collision (1,56) then BlockOut = 56
+if sprite collision (1,57) then BlockOut = 57
+if sprite collision (1,58) then BlockOut = 58
+if sprite collision (1,59) then BlockOut = 59
+if sprite collision (1,60) then BlockOut = 60
+if sprite collision (1,61) then BlockOut = 61
+if sprite collision (1,62) then BlockOut = 62
+if sprite collision (1,63) then BlockOut = 63
+if sprite collision (1,64) then BlockOut = 64
+if sprite collision (1,65) then BlockOut = 65
+if sprite collision (1,66) then BlockOut = 66
+if sprite collision (1,67) then BlockOut = 67
+if sprite collision (1,68) then BlockOut = 68
+if sprite collision (1,69) then BlockOut = 69
+if sprite collision (1,70) then BlockOut = 70
+if sprite collision (1,71) then BlockOut = 71
+if sprite collision (1,72) then BlockOut = 72
+if sprite collision (1,73) then BlockOut = 73
+if sprite collision (1,74) then BlockOut = 74
+if sprite collision (1,75) then BlockOut = 75
+if sprite collision (1,76) then BlockOut = 76
+if sprite collision (1,77) then BlockOut = 77
+if sprite collision (1,78) then BlockOut = 78
+if sprite collision (1,79) then BlockOut = 79
+if sprite collision (1,80) then BlockOut = 80
+if sprite collision (1,81) then BlockOut = 81
+if sprite collision (1,82) then BlockOut = 82
+if sprite collision (1,83) then BlockOut = 83
+if sprite collision (1,84) then BlockOut = 84
+if sprite collision (1,85) then BlockOut = 85
+if sprite collision (1,86) then BlockOut = 86
+if sprite collision (1,87) then BlockOut = 87
+if sprite collision (1,88) then BlockOut = 88
+if sprite collision (1,89) then BlockOut = 89
+if sprite collision (1,90) then BlockOut = 90
+if sprite collision (1,91) then BlockOut = 91
+if sprite collision (1,92) then BlockOut = 92
+if sprite collision (1,93) then BlockOut = 93
+if sprite collision (1,94) then BlockOut = 94
+if sprite collision (1,95) then BlockOut = 95
+if sprite collision (1,96) then BlockOut = 96
+if sprite collision (1,97) then BlockOut = 97
+if sprite collision (1,98) then BlockOut = 98
+if sprite collision (1,99) then BlockOut = 99
+if sprite collision (1,100) then BlockOut = 100
+if sprite collision (1,101) then BlockOut = 101
+if sprite collision (1,102) then BlockOut = 102
+if sprite collision (1,103) then BlockOut = 103
+if sprite collision (1,104) then BlockOut = 104
+if sprite collision (1,105) then BlockOut = 105
+if sprite collision (1,106) then BlockOut = 106
+if sprite collision (1,107) then BlockOut = 107
+if sprite collision (1,108) then BlockOut = 108
+if sprite collision (1,109) then BlockOut = 109
+if sprite collision (1,110) then BlockOut = 110
+if sprite collision (1,111) then BlockOut = 111
+if sprite collision (1,112) then BlockOut = 112
+if sprite collision (1,113) then BlockOut = 113
+if sprite collision (1,114) then BlockOut = 114
+if sprite collision (1,115) then BlockOut = 115
+if sprite collision (1,116) then BlockOut = 116
+if sprite collision (1,117) then BlockOut = 117
+if sprite collision (1,118) then BlockOut = 118
+if sprite collision (1,119) then BlockOut = 119
+if sprite collision (1,120) then BlockOut = 120
+if sprite collision (1,121) then BlockOut = 121
+if sprite collision (1,122) then BlockOut = 122
+if sprite collision (1,123) then BlockOut = 123
+if sprite collision (1,124) then BlockOut = 124
+if sprite collision (1,125) then BlockOut = 125
+if sprite collision (1,126) then BlockOut = 126
+if sprite collision (1,127) then BlockOut = 127
+if sprite collision (1,128) then BlockOut = 128
+if sprite collision (1,129) then BlockOut = 129
+if sprite collision (1,130) then BlockOut = 130
+
+if sprite collision (1, BlockOut)
+   Blocks = Blocks -1
+   play sound 1
+   delete sprite BlockOut
+   if BallDir = 3
+      BallDir = 4
+   endif
+
+   if BallDir = 2
+      BallDir = 1
+   endif
+endif
+
+Rem Level Things
+
+if Level = 1
+
+
+   if Blocks = 25
+      if Lives < 3
+         Lives = Lives +1
+      endif
+   endif
+
+endif
+
+if Level = 2
+
+   Ballspeed = 2
+   sync rate 150
+
+   if Blocks = 20
+      if Lives < 3
+         Lives = Lives +1
+      endif
+   endif
+
+endif
+
+if Level = 3
+
+   Ballspeed = 3
+   Bouncerspeed = 2
+   sync rate 110
+
+   if Blocks = 15
+      if Lives < 3
+         Lives = Lives +1
+      endif
+   endif
+
+endif
+
+if Level = 4
+
+   Ballspeed = 4
+   Bouncerspeed = 3
+   sync rate 90
+
+   if Blocks = 10
+      if Lives < 3
+         Lives = Lives +1
+      endif
+   endif
+
+endif
+
+if Level = 5
+
+   Ballspeed = 5
+   Bouncerspeed = 4
+   sync rate 90
+
+endif
+
+Rem Puase Game
+if inkey$()="p" then gamepause()
+
+Rem Background Color
+backdrop on : color backdrop rgb(100,100,200)
+
+sync
+
+loop
+
+Rem Functions
+
+function endgame()
+
+Rem End Game
+do
+
+sprite 132, 170, 140, 21
+backdrop on : color backdrop rgb(0,0,0)
+
+sync
+
+loop
+
+endfunction
+
+function gamepause()
+
+Rem Pause Function
+do
+
+   sprite 10, 265, 218, 20
+
+   if inkey$()="r"
+      goto ResumeGame
+   endif
+
+sync
+
+loop
+
+ResumeGame:
+
+delete sprite 10
+
+endfunction

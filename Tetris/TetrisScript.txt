@@ -1,0 +1,4088 @@
+Rem Project: Tetris
+Rem Created: 8/18/2006 8:38:23 PM
+
+Rem ***** Main Source File *****
+
+Rem Settings
+sync on: sync rate 50
+set display mode 400,600,32
+hide mouse
+
+Rem Media
+
+load image "BlueBlock.png", 1
+load image "GreenBlock.png", 2
+load image "LightBlueBlock.png", 3
+load image "OrangeBlock.png", 4
+load image "PurpleBlock.png", 5
+load image "RedBlock.png", 6
+load image "YellowBlock.png", 7
+load image "SilverBlock.png", 8
+load image "StartBackground.png", 9, 1
+load image "Background.png", 10, 1
+load image "Paused.png", 11, 1
+load image "GameOver.png", 12, 1
+load image "LevelUp.png",13,1
+load image "OptionsBackground.png", 14, 1
+load image "BigCursor.png",15, 1
+load image "LittleCursor.png",16, 1
+load image "HighScoreBackground.png",17, 1
+load image "HighScoreLabel.png",18, 1
+
+load sound "FigureRotate.wav",1
+load sound "LineBreak.wav",2
+load sound "FigurePut.wav",3
+load sound "GameOver.wav",4
+load sound "Cursor.wav",5
+load sound "LevelPass.wav",6
+load sound "Desicion.wav",7
+
+load music "GameSong.mp3",1
+
+Rem HighScore Array
+
+dim HighScoreTable(3)
+dim HighScoreNames$(3)
+
+if file exist("C:/HighScoreTable.txt") = 0 and file exist("C:/HighScoreNames.txt") = 0
+   make file "C:/HighScoreTable.txt"
+   make file "C:/HighScoreNames.txt"
+   HighScoreNames$(1) = "None"
+   HighScoreNames$(2) = "None"
+   HighScoreNames$(3) = "None"
+   save array "C:/HighScoreNames.txt", HighScoreNames$(3)
+else
+   load array "C:/HighScoreTable.txt", HighScoreTable(3)
+   load array "C:/HighScoreNames.txt", HighScoreNames$(3)
+endif
+
+Music = 1
+Sounds = 1
+
+loop music 1
+
+StartProgram:
+
+Rem =======================================================================================================================
+Rem Start Menu
+Rem =======================================================================================================================
+
+StartMenu:
+
+MenuOpt = 1
+
+while returnkey() = 1
+   paste image 9, 0, 0
+
+   set text font "Arial" : set text size 22
+   set text to bold
+
+   ink rgb(255,255,255), 0
+   text 298, 400, "Start"
+   text 265, 430, "High Scores"
+   text 285, 460, "Options"
+   text 303, 490, "Exit"
+   sync
+endwhile
+
+do
+
+paste image 9, 0, 0
+
+set text font "Arial" : set text size 22
+set text to bold
+
+ink rgb(255,255,255), 0
+text 298, 400, "Start"
+text 265, 430, "High Scores"
+text 285, 460, "Options"
+text 303, 490, "Exit"
+
+if upkey()=(1) and MenuOpt > 1
+   play sound 5
+   MenuOpt = MenuOpt - 1
+endif
+
+if downkey()=(1) and MenuOpt < 4
+   play sound 5
+   MenuOpt = MenuOpt + 1
+endif
+
+if MenuOpt = 1
+
+   ink rgb(255,255,0), 0
+   line 293, 399, 346, 399
+   line 293, 422, 346, 422
+   line 293, 399, 293, 422
+   line 346, 399, 346, 422
+
+   if returnkey() = 1
+      play sound 7
+      goto MainGame
+   endif
+
+endif
+
+if MenuOpt = 2
+
+   ink rgb(255,255,0), 0
+   line 263, 429, 379, 429
+   line 263, 455, 379, 455
+   line 263, 429, 263, 455
+   line 379, 429, 379, 455
+
+   if returnkey() = 1
+      play sound 7
+      goto HighScoreMenu
+   endif
+
+endif
+
+if MenuOpt = 3
+
+   ink rgb(255,255,0), 0
+   line 281, 459, 361, 459
+   line 281, 485, 361, 485
+   line 281, 459, 281, 485
+   line 361, 459, 361, 485
+
+   if returnkey() = 1
+      play sound 7
+      goto OptionsMenu
+   endif
+
+endif
+
+if MenuOpt = 4
+
+   ink rgb(255,255,0), 0
+   line 299, 489, 342, 489
+   line 299, 512, 342, 512
+   line 299, 489, 299, 512
+   line 342, 489, 342, 512
+
+   if returnkey() = 1
+      play sound 7
+      wait 500
+      end
+   endif
+
+endif
+
+while upkey()= 1
+sync
+endwhile
+
+while downkey()= 1
+sync
+endwhile
+
+sync
+
+loop
+
+Rem =======================================================================================================================
+Rem High Scores Menu
+Rem =======================================================================================================================
+
+HighScoreMenu:
+
+while returnkey()= 1
+   paste image 17, 0, 0
+
+   set text font "Arial" : set text size 18
+   set text to bold
+   ink rgb(0,0,0), 0
+   text 72, 456, "Reset High Scores"
+   text 120, 521, "Back"
+
+   text 96, 109, HighScoreNames$(1)
+   set cursor 143, 159
+   print HighScoreTable(1)
+   text 96, 224, HighScoreNames$(2)
+   set cursor 143, 274
+   print HighScoreTable(2)
+   text 96, 339, HighScoreNames$(3)
+   set cursor 143, 389
+   print HighScoreTable(3)
+
+   sync
+endwhile
+
+MenuOpt = 2
+
+do
+
+if upkey()=(1) and MenuOpt > 1
+   play sound 5
+   MenuOpt = MenuOpt - 1
+endif
+
+if downkey()=(1) and MenuOpt < 2
+   play sound 5
+   MenuOpt = MenuOpt + 1
+endif
+
+if MenuOpt = 1
+
+   sprite 9,40,442,15
+
+   if returnkey() = 1
+      play sound 7
+      dim HighScoreTable(3)
+      dim HighScoreNames$(3)
+      HighScoreTable(1) = 0
+      HighScoreTable(2) = 0
+      HighScoreTable(3) = 0
+      HighScoreNames$(1) = "None"
+      HighScoreNames$(2) = "None"
+      HighScoreNames$(3) = "None"
+      save array "C:/HighScoreTable.txt", HighScoreTable(3)
+      save array "C:/HighScoreNames.txt", HighScoreNames$(3)
+      MenuOpt = 2
+      while returnkey() = 1
+         gosub KeyHold
+      endwhile
+   endif
+
+endif
+
+if MenuOpt = 2
+
+   sprite 9,103,507,16
+
+   if returnkey() = 1
+      play sound 7
+      delete sprite 9
+      goto StartMenu
+   endif
+
+endif
+
+while upkey()= 1
+   gosub KeyHold
+endwhile
+
+while downkey()= 1
+   gosub KeyHold
+endwhile
+
+paste image 17, 0, 0
+
+set text font "Arial" : set text size 18
+set text to bold
+
+ink rgb(0,0,0), 0
+text 72, 456, "Reset High Scores"
+text 120, 521, "Back"
+
+text 96, 109, HighScoreNames$(1)
+set cursor 143, 159
+print HighScoreTable(1)
+text 96, 224, HighScoreNames$(2)
+set cursor 143, 274
+print HighScoreTable(2)
+text 96, 339, HighScoreNames$(3)
+set cursor 143, 389
+print HighScoreTable(3)
+
+sync
+
+loop
+
+KeyHold:
+
+paste image 17, 0, 0
+
+set text font "Arial" : set text size 18
+set text to bold
+
+ink rgb(0,0,0), 0
+text 72, 456, "Reset High Scores"
+text 120, 521, "Back"
+
+text 96, 109, HighScoreNames$(1)
+set cursor 143, 159
+print HighScoreTable(1)
+text 96, 224, HighScoreNames$(2)
+set cursor 143, 274
+print HighScoreTable(2)
+text 96, 339, HighScoreNames$(3)
+set cursor 143, 389
+print HighScoreTable(3)
+
+sync
+
+return
+
+Rem =======================================================================================================================
+Rem Options Menu
+Rem =======================================================================================================================
+
+OptionsMenu:
+
+while returnkey()= 1
+   paste image 14, 0, 0
+
+   set text font "Arial" : set text size 18
+   set text to bold
+
+   ink rgb(0,0,0), 0
+   text 55, 265, "Music:"
+   text 55, 330, "Sounds:"
+   text 120, 395, "Back"
+
+   if Music = 1
+     ink rgb(255,0,0), 0
+     text 55, 265, "                  ON"
+   else
+      ink rgb(0,0,0), 0
+     text 55, 265, "                  ON"
+   endif
+
+   if Music = 0
+     ink rgb(255,0,0), 0
+    text 55, 265, "                               OFF"
+   else
+    ink rgb(0,0,0), 0
+    text 55, 265, "                               OFF"
+   endif
+
+   if Sounds = 1
+     ink rgb(255,0,0), 0
+    text 55, 330, "                  ON"
+   else
+     ink rgb(0,0,0), 0
+     text 55, 330, "                  ON"
+   endif
+
+   if Sounds = 0
+    ink rgb(255,0,0), 0
+    text 55, 330, "                               OFF"
+   else
+    ink rgb(0,0,0), 0
+    text 55, 330, "                               OFF"
+   endif
+   sync
+endwhile
+
+set text size 16
+set text to normal
+ink rgb(255,255,255), 0
+center text 322,525, "Tetris v2.0"
+
+MenuOpt = 3
+
+do
+
+if upkey()=(1) and MenuOpt > 1
+   play sound 5
+   MenuOpt = MenuOpt - 1
+endif
+
+if downkey()=(1) and MenuOpt < 3
+   play sound 5
+   MenuOpt = MenuOpt + 1
+endif
+
+if MenuOpt = 1
+
+   sprite 9,40,251,15
+
+   if rightkey()=(1) and Music = 1
+      play sound 5
+      Music = Music - 1
+      stop music 1
+   endif
+
+   if leftkey()=(1) and Music = 0
+     play sound 5
+     Music = Music + 1
+     loop music 1
+   endif
+
+   while rightkey()= 1
+    gosub KeyHold2
+   endwhile
+
+   while leftkey()= 1
+    gosub KeyHold2
+   endwhile
+
+endif
+
+if MenuOpt = 2
+
+   sprite 9,40,316,15
+
+   if rightkey()=(1) and Sounds = 1
+      play sound 5
+      Sounds = Sounds - 1
+      for V = 1 to 7
+      set sound volume V, 0
+      next
+   endif
+
+   if leftkey()=(1) and Sounds = 0
+     play sound 5
+     Sounds = Sounds + 1
+      for V = 1 to 7
+      set sound volume V, 100
+      next
+   endif
+
+   while rightkey()= 1
+    gosub KeyHold2
+   endwhile
+
+   while leftkey()= 1
+    gosub KeyHold2
+   endwhile
+
+endif
+
+if MenuOpt = 3
+
+   sprite 9,103,381,16
+
+   if returnkey() = 1
+      play sound 7
+      delete sprite 9
+      goto StartMenu
+   endif
+
+endif
+
+while upkey()= 1
+   gosub KeyHold2
+endwhile
+
+while downkey()= 1
+   gosub KeyHold2
+endwhile
+
+paste image 14, 0, 0
+
+set text font "Arial" : set text size 18
+set text to bold
+
+ink rgb(0,0,0), 0
+text 55, 265, "Music:"
+text 55, 330, "Sounds:"
+text 120, 395, "Back"
+
+if Music = 1
+   ink rgb(255,0,0), 0
+   text 55, 265, "                  ON"
+else
+   ink rgb(0,0,0), 0
+   text 55, 265, "                  ON"
+endif
+
+if Music = 0
+   ink rgb(255,0,0), 0
+   text 55, 265, "                               OFF"
+else
+   ink rgb(0,0,0), 0
+   text 55, 265, "                               OFF"
+endif
+
+if Sounds = 1
+   ink rgb(255,0,0), 0
+   text 55, 330, "                  ON"
+else
+   ink rgb(0,0,0), 0
+   text 55, 330, "                  ON"
+endif
+
+if Sounds = 0
+   ink rgb(255,0,0), 0
+   text 55, 330, "                               OFF"
+else
+   ink rgb(0,0,0), 0
+   text 55, 330, "                               OFF"
+endif
+
+set text size 16
+set text to normal
+ink rgb(255,255,255), 0
+center text 322,525, "Tetris v2.0"
+
+sync
+
+loop
+
+KeyHold2:
+
+   paste image 14, 0, 0
+
+   set text font "Arial" : set text size 18
+   set text to bold
+
+   ink rgb(0,0,0), 0
+   text 55, 265, "Music:"
+   text 55, 330, "Sounds:"
+   text 120, 395, "Back"
+
+   if Music = 1
+     ink rgb(255,0,0), 0
+     text 55, 265, "                  ON"
+   else
+      ink rgb(0,0,0), 0
+     text 55, 265, "                  ON"
+   endif
+
+   if Music = 0
+     ink rgb(255,0,0), 0
+    text 55, 265, "                               OFF"
+   else
+    ink rgb(0,0,0), 0
+    text 55, 265, "                               OFF"
+   endif
+
+   if Sounds = 1
+     ink rgb(255,0,0), 0
+    text 55, 330, "                  ON"
+   else
+     ink rgb(0,0,0), 0
+     text 55, 330, "                  ON"
+   endif
+
+   if Sounds = 0
+    ink rgb(255,0,0), 0
+    text 55, 330, "                               OFF"
+   else
+    ink rgb(0,0,0), 0
+    text 55, 330, "                               OFF"
+   endif
+
+   set text size 16
+   set text to normal
+   ink rgb(255,255,255), 0
+   center text 322,525, "Tetris v2.0"
+
+   sync
+
+return
+
+MainGame:
+
+Remstart
+===========================================================================================================================
+There Are 12 Columns and 28 Rows
+
+Dim's Legend:
+
+For Columns and Rows
+(#)(1) = X Position if Columns, Y Position if Rows
+
+For Grid
+(#)(#)(1) = 1 If filled or 0 if not filled
+(#)(#)(2) = 0 No Color, 1 to 8 the filled color
+(#)(#)(3) = Sprite number used in that grid
+===========================================================================================================================
+remend
+
+Rem Variables
+
+dim Columns(12,1)
+
+Columns(1,1) = 20
+Columns(2,1) = 40
+Columns(3,1) = 60
+Columns(4,1) = 80
+Columns(5,1) = 100
+Columns(6,1) = 120
+Columns(7,1) = 140
+Columns(8,1) = 160
+Columns(9,1) = 180
+Columns(10,1) = 200
+Columns(11,1) = 220
+Columns(12,1) = 240
+
+
+dim Rows(29,1)
+
+Rows(1,1) = 20
+Rows(2,1) = 40
+Rows(3,1) = 60
+Rows(4,1) = 80
+Rows(5,1) = 100
+Rows(6,1) = 120
+Rows(7,1) = 140
+Rows(8,1) = 160
+Rows(9,1) = 180
+Rows(10,1) = 200
+Rows(11,1) = 220
+Rows(12,1) = 240
+Rows(13,1) = 260
+Rows(14,1) = 280
+Rows(15,1) = 300
+Rows(16,1) = 320
+Rows(17,1) = 340
+Rows(18,1) = 360
+Rows(19,1) = 380
+Rows(20,1) = 400
+Rows(21,1) = 420
+Rows(22,1) = 440
+Rows(23,1) = 460
+Rows(24,1) = 480
+Rows(25,1) = 500
+Rows(26,1) = 520
+Rows(27,1) = 540
+Rows(28,1) = 560
+
+dim Grid(12,28,3)
+
+S = 15
+
+Block1 = 1
+Block2 = 2
+Block3 = 3
+Block4 = 4
+
+Level = 1
+Score = 0
+
+RandomFigure = rnd(6) + 1
+ComingFigure = rnd(6) + 1
+Figure = rnd(6) + 1
+
+Figure = ComingFigure
+ComingFigure = RandomFigure
+
+FigureX = 6
+FigureY = 1
+
+Rotation = 1
+
+GameSpeed = 100
+
+ScrollSpeed = 5
+LvlSpeed = 5
+
+Line2Count = 0
+Line3Count = 0
+Line4Count = 0
+Line5Count = 0
+Line6Count = 0
+Line7Count = 0
+Line8Count = 0
+Line9Count = 0
+Line10Count = 0
+Line11Count = 0
+Line12Count = 0
+Line13Count = 0
+Line14Count = 0
+Line15Count = 0
+Line16Count = 0
+Line17Count = 0
+Line18Count = 0
+Line19Count = 0
+Line20Count = 0
+Line21Count = 0
+Line22Count = 0
+Line23Count = 0
+Line24Count = 0
+Line25Count = 0
+Line26Count = 0
+Line27Count = 0
+Line28Count = 0
+
+LinesBreaked = 0
+
+UpScrollingBlocks = 0
+
+gosub MakeFigure
+
+Rem =======================================================================================================================
+Rem Main Game Loop
+Rem =======================================================================================================================
+GameLoop:
+do
+
+Rem Display Score & Level
+
+paste image 10, 0, 0
+
+set text font "Arial" : set text size 18
+set text to normal
+
+ink rgb(0,0,0), 0
+set cursor 280, 431
+print Level
+set cursor 280, 525
+print Score
+
+Rem Randomize UpComing Figure
+RandomFigure = rnd(6) + 1
+
+Rem Keys
+
+if rightkey()= 1
+
+   if Figure = 1
+      if Rotation = 1 and FigureX < 12
+         if Grid(FigureX + 1,FigureY,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1 or Grid(FigureX,FigureY + 2,1) = 1
+         else
+            gosub RightKeyMove
+         endif
+      endif
+
+      if Rotation = 2 and FigureX < 11
+         if Grid(FigureX + 1,FigureY,1) = 1 or Grid(FigureX + 2,FigureY + 1,1) = 1
+         else
+            gosub RightKeyMove
+         endif
+      endif
+   endif
+
+   if Figure = 2
+      if Rotation = 1 and FigureX < 11
+         if Grid(FigureX + 2,FigureY,1) = 1 or Grid(FigureX + 1,FigureY - 1,1) = 1
+         else
+            gosub RightKeyMove
+         endif
+      endif
+
+      if Rotation = 2 and FigureX < 11
+         if Grid(FigureX + 2,FigureY,1) = 1 or Grid(FigureX + 1,FigureY - 1,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1
+         else
+            gosub RightKeyMove
+         endif
+      endif
+
+      if Rotation = 3 and FigureX < 11
+         if Grid(FigureX + 2,FigureY,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1
+         else
+            gosub RightKeyMove
+         endif
+      endif
+
+      if Rotation = 4 and FigureX < 12
+         if Grid(FigureX + 1,FigureY,1) = 1 or Grid(FigureX + 1,FigureY - 1,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1
+         else
+            gosub RightKeyMove
+         endif
+      endif
+   endif
+
+   if Figure = 3
+      if Rotation = 1 and FigureX < 12
+         if Grid(FigureX + 1,FigureY,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1 or Grid(FigureX + 1,FigureY + 2,1) = 1
+         else
+            gosub RightKeyMove
+         endif
+      endif
+
+      if Rotation = 2 and FigureX < 12
+         if Grid(FigureX + 1,FigureY,1) = 1 or Grid(FigureX + 1,FigureY - 1,1) = 1
+         else
+            gosub RightKeyMove
+         endif
+      endif
+
+      if Rotation = 3 and FigureX < 11
+         if Grid(FigureX + 2,FigureY,1) = 1 or Grid(FigureX + 1,FigureY - 1,1) = 1 or Grid(FigureX + 1,FigureY - 2,1) = 1
+         else
+            gosub RightKeyMove
+         endif
+      endif
+
+      if Rotation = 4 and FigureX < 10
+         if Grid(FigureX + 3,FigureY,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1
+         else
+            gosub RightKeyMove
+         endif
+      endif
+   endif
+
+   if Figure = 4
+      if Rotation = 1 and FigureX < 11
+         if Grid(FigureX + 2,FigureY,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1 or Grid(FigureX + 1,FigureY + 2,1) = 1
+         else
+            gosub RightKeyMove
+         endif
+      endif
+
+      if Rotation = 2 and FigureX < 12
+         if Grid(FigureX + 1,FigureY,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1
+         else
+            gosub RightKeyMove
+         endif
+      endif
+
+      if Rotation = 3 and FigureX < 12
+         if Grid(FigureX + 1,FigureY,1) = 1 or Grid(FigureX + 1,FigureY - 1,1) = 1 or Grid(FigureX + 1,FigureY - 2,1) = 1
+         else
+            gosub RightKeyMove
+         endif
+      endif
+
+      if Rotation = 4 and FigureX < 10
+         if Grid(FigureX + 3,FigureY,1) = 1 or Grid(FigureX + 1,FigureY - 1,1) = 1
+         else
+            gosub RightKeyMove
+         endif
+      endif
+   endif
+
+   if Figure = 5
+      if Rotation = 1 and FigureX < 11
+         if Grid(FigureX + 1,FigureY,1) = 1 or Grid(FigureX + 2,FigureY + 1,1) = 1 or Grid(FigureX + 2,FigureY + 2,1) = 1
+         else
+            gosub RightKeyMove
+         endif
+      endif
+
+      if Rotation = 2 and FigureX < 11
+         if Grid(FigureX + 2,FigureY,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1
+         else
+            gosub RightKeyMove
+         endif
+      endif
+   endif
+
+   if Figure = 6
+      if Rotation = 1 and FigureX < 12
+         if Grid(FigureX + 1,FigureY,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1 or Grid(FigureX + 1,FigureY + 2,1) = 1 or Grid(FigureX + 1,FigureY + 3,1) = 1
+         else
+            gosub RightKeyMove
+         endif
+      endif
+
+      if Rotation = 2 and FigureX < 9
+         if Grid(FigureX + 4,FigureY,1) = 1
+         else
+            gosub RightKeyMove
+         endif
+      endif
+   endif
+
+   if Figure = 7 and FigureX < 11
+   if Grid(FigureX + 2,FigureY,1) = 1 or Grid(FigureX + 2,FigureY + 1,1) = 1
+   else
+      gosub RightKeyMove
+   endif
+   endif
+
+endif
+
+if leftkey()= 1
+
+   if Figure = 1
+      if Rotation = 1 and FigureX > 2
+         if Grid(FigureX - 2,FigureY + 1,1) = 1 or Grid(FigureX - 2,FigureY + 2,1) = 1 or Grid(FigureX - 1,FigureY,1) = 1
+         else
+            gosub LeftKeyMove
+         endif
+      endif
+
+      if Rotation = 2 and FigureX > 2
+         if Grid(FigureX - 2,FigureY,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1
+         else
+            gosub LeftKeyMove
+         endif
+      endif
+   endif
+
+   if Figure = 2
+      if Rotation = 1 and FigureX > 2
+         if Grid(FigureX - 2,FigureY,1) = 1 or Grid(FigureX - 1,FigureY - 1,1) = 1
+         else
+            gosub LeftKeyMove
+         endif
+      endif
+
+      if Rotation = 2 and FigureX > 1
+         if Grid(FigureX - 1,FigureY,1) = 1 or Grid(FigureX - 1,FigureY - 1,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1
+         else
+            gosub LeftKeyMove
+         endif
+      endif
+
+      if Rotation = 3 and FigureX > 2
+         if Grid(FigureX - 2,FigureY,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1
+         else
+            gosub LeftKeyMove
+         endif
+      endif
+      if Rotation = 4 and FigureX > 2
+         if Grid(FigureX - 2,FigureY,1) = 1 or Grid(FigureX - 1,FigureY - 1,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1
+         else
+            gosub LeftKeyMove
+         endif
+      endif
+   endif
+
+   if Figure = 3
+      if Rotation = 1 and FigureX > 2
+         if Grid(FigureX - 2,FigureY,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1 or Grid(FigureX - 1,FigureY + 2,1) = 1
+         else
+            gosub LeftKeyMove
+         endif
+      endif
+
+      if Rotation = 2 and FigureX > 3
+         if Grid(FigureX - 3,FigureY,1) = 1 or Grid(FigureX - 1,FigureY - 1,1) = 1
+         else
+            gosub LeftKeyMove
+         endif
+      endif
+
+      if Rotation = 3 and FigureX > 1
+         if Grid(FigureX - 1,FigureY,1) = 1 or Grid(FigureX - 1,FigureY - 1,1) = 1 or Grid(FigureX - 1,FigureY - 2,1) = 1
+         else
+            gosub LeftKeyMove
+         endif
+      endif
+
+      if Rotation = 4 and FigureX > 1
+         if Grid(FigureX - 1,FigureY,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1
+         else
+            gosub LeftKeyMove
+         endif
+      endif
+   endif
+
+   if Figure = 4
+      if Rotation = 1 and FigureX > 1
+         if Grid(FigureX - 1,FigureY,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1 or Grid(FigureX - 1,FigureY + 2,1) = 1
+         else
+            gosub LeftKeyMove
+         endif
+      endif
+
+      if Rotation = 2 and FigureX > 3
+         if Grid(FigureX - 3,FigureY,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1
+         else
+            gosub LeftKeyMove
+         endif
+      endif
+
+      if Rotation = 3 and FigureX > 2
+         if Grid(FigureX - 2,FigureY,1) = 1 or Grid(FigureX - 1,FigureY - 1,1) = 1 or Grid(FigureX - 1,FigureY - 2,1) = 1
+         else
+            gosub LeftKeyMove
+         endif
+      endif
+
+      if Rotation = 4 and FigureX > 1
+         if Grid(FigureX - 1,FigureY + 1,1) = 1 or Grid(FigureX - 1,FigureY - 1,1) = 1
+         else
+            gosub LeftKeyMove
+         endif
+      endif
+   endif
+
+   if Figure = 5
+      if Rotation = 1 and FigureX > 1
+         if Grid(FigureX - 1,FigureY,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1 or Grid(FigureX,FigureY + 2,1) = 1
+         else
+            gosub LeftKeyMove
+         endif
+      endif
+
+      if Rotation = 2 and FigureX > 2
+         if Grid(FigureX - 1,FigureY,1) = 1 or Grid(FigureX - 2,FigureY + 1,1) = 1
+         else
+            gosub LeftKeyMove
+         endif
+      endif
+   endif
+
+   if Figure = 6
+      if Rotation = 1 and FigureX > 1
+         if Grid(FigureX - 1,FigureY,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1 or Grid(FigureX - 1,FigureY + 2,1) = 1 or Grid(FigureX - 1,FigureY + 3,1) = 1
+         else
+            gosub LeftKeyMove
+         endif
+      endif
+
+      if Rotation = 2 and FigureX > 1
+         if Grid(FigureX - 1,FigureY,1) = 1
+         else
+            gosub LeftKeyMove
+         endif
+      endif
+   endif
+
+   if Figure = 7 and FigureX > 1
+      if Grid(FigureX - 1,FigureY,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1
+      else
+       gosub LeftKeyMove
+      endif
+   endif
+
+endif
+
+if upkey()= 1
+
+   if Figure = 1 and FigureX < 12 and FigureX > 1
+      if Rotation = 1
+         if Grid(FigureX - 1,FigureY,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1
+         else
+            gosub RotateMove
+         endif
+      endif
+
+      if Rotation = 2 and FigureY < 27
+         if Grid(FigureX - 1,FigureY + 1,1) = 1 or Grid(FigureX - 1,FigureY + 2,1) = 1
+         else
+            gosub RotateMove
+         endif
+      endif
+   endif
+
+   if Figure = 2
+      if Rotation = 1 and FigureY < 28
+         if Grid(FigureX,FigureY + 1,1) = 1
+         else
+            gosub RotateMove
+         endif
+      endif
+
+      if Rotation = 2 and FigureX > 1
+         if Grid(FigureX - 1,FigureY,1) = 1
+         else
+            gosub RotateMove
+         endif
+      endif
+
+      if Rotation = 3
+         if Grid(FigureX,FigureY - 1,1) = 1
+         else
+            gosub RotateMove
+         endif
+      endif
+
+      if Rotation = 4 and FigureX < 12
+         if Grid(FigureX + 1,FigureY,1) = 1
+         else
+            gosub RotateMove
+         endif
+      endif
+   endif
+
+   if Figure = 3
+      if Rotation = 1 and FigureX > 2
+         if Grid(FigureX - 1,FigureY,1) = 1 or Grid(FigureX - 2,FigureY,1) = 1 or Grid(FigureX,FigureY - 1,1) = 1
+         else
+            gosub RotateMove
+         endif
+      endif
+
+      if Rotation = 2 and FigureX < 12
+         if Grid(FigureX,FigureY -1,1) = 1 or Grid(FigureX,FigureY - 2,1) = 1 or Grid(FigureX + 1,FigureY,1) = 1
+         else
+            gosub RotateMove
+         endif
+      endif
+
+      if Rotation = 3 and FigureX < 11
+         if Grid(FigureX + 1,FigureY,1) = 1 or Grid(FigureX + 2,FigureY,1) = 1 or Grid(FigureX,FigureY + 1,1) = 1
+         else
+            gosub RotateMove
+         endif
+      endif
+
+      if Rotation = 4 and FigureX > 1 and FigureY < 26
+         if Grid(FigureX,FigureY + 1,1) = 1 or Grid(FigureX,FigureY + 2,1) = 1 or Grid(FigureX - 1,FigureY,1) = 1
+         else
+            gosub RotateMove
+         endif
+      endif
+   endif
+
+   if Figure = 4
+      if Rotation = 1 and FigureX > 2
+         if Grid(FigureX - 1,FigureY,1) = 1 or Grid(FigureX - 2,FigureY,1) = 1
+         else
+            gosub RotateMove
+         endif
+      endif
+
+      if Rotation = 2
+         if Grid(FigureX,FigureY -1,1) = 1 or Grid(FigureX,FigureY - 2,1) = 1
+         else
+            gosub RotateMove
+         endif
+      endif
+
+      if Rotation = 3 and FigureX < 11
+         if Grid(FigureX + 1,FigureY,1) = 1 or Grid(FigureX + 2,FigureY,1) = 1
+         else
+            gosub RotateMove
+         endif
+      endif
+
+      if Rotation = 4 and FigureY <  26
+         if Grid(FigureX,FigureY + 1,1) = 1 or Grid(FigureX,FigureY + 2,1) = 1
+         else
+            gosub RotateMove
+         endif
+      endif
+
+   endif
+
+   if Figure = 5 and FigureX < 12 and FigureX > 1
+      if Rotation = 1
+         if Grid(FigureX + 1,FigureY,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1
+         else
+            gosub RotateMove
+         endif
+      endif
+
+      if Rotation = 2 and FigureY < 27
+         if Grid(FigureX + 1,FigureY + 1,1) = 1 or Grid(FigureX + 1,FigureY + 2,1) = 1
+         else
+            gosub RotateMove
+         endif
+      endif
+   endif
+
+   if Figure = 6 and FigureX < 10
+      if Rotation = 1
+         if Grid(FigureX + 1,FigureY,1) = 1 or Grid(FigureX + 2,FigureY,1) = 1 or Grid(FigureX + 3,FigureY,1) = 1
+         else
+            gosub RotateMove
+         endif
+      endif
+
+      if Rotation = 2 and FigureY < 25
+         if Grid(FigureX,FigureY + 3,1) = 1 or Grid(FigureX,FigureY + 2,1) = 1 or Grid(FigureX,FigureY + 1,1) = 1
+         else
+            gosub RotateMove
+         endif
+      endif
+   endif
+
+endif
+
+if downkey() = 1
+   GameSpeed = 25
+   ScrollSpeed = 0
+   Score = Score + 1
+else
+   GameSpeed = 100
+endif
+
+if inkey$()="p" then goto GamePause
+
+SyncEndLoop:
+
+Rem Level Complete
+
+if Level = 1 and LinesBreaked = 10
+   LinesBreaked = 0
+   Level = 2
+   gosub LevelMake
+endif
+
+if Level = 2 and LinesBreaked = 15
+   LinesBreaked = 0
+   Level = 3
+   gosub LevelMake
+endif
+
+if Level = 3 and LinesBreaked = 20
+   LinesBreaked = 0
+   Level = 4
+   gosub LevelMake
+endif
+
+if Level = 4 and LinesBreaked = 20
+   LinesBreaked = 0
+   Level = 5
+   gosub LevelMake
+endif
+
+if Level = 5 and LinesBreaked = 20
+   LinesBreaked = 0
+   Level = 6
+   gosub LevelMake
+endif
+
+if Level = 6 and LinesBreaked = 25
+   LinesBreaked = 0
+   Level = 7
+   gosub LevelMake
+endif
+
+if Level = 7 and LinesBreaked = 30
+   LinesBreaked = 0
+   Level = 8
+   gosub LevelMake
+endif
+
+if Level = 8 and LinesBreaked = 30
+   LinesBreaked = 0
+   Level = 9
+   gosub LevelMake
+endif
+
+if Level = 8
+   if RandomCount = 100
+      RandomX = rnd(11) + 1
+      if Line20Count > 5
+         RandomY = rnd(13) + 15
+      else
+         RandomY = rnd(8) + 20
+      endif
+      if Grid(RandomX,RandomY,1) = 1
+      else
+         if sprite y(Block1) = Rows(RandomY) or sprite y(Block2) = Rows(RandomY) or sprite y(Block3) = Rows(RandomY) or sprite y(Block4) = Rows(RandomY)
+         else
+            S = S + 1
+            Grid(RandomX,RandomY,3) = S
+            Grid(RandomX,RandomY,1) = 1
+            Grid(RandomX,RandomY,2) = 8
+            sprite Grid(RandomX,RandomY,3),Columns(RandomX,1),Rows(RandomY,1),Grid(RandomX,RandomY,2)
+            if RandomY = 15 then Line15Count = Line15Count + 1
+            if RandomY = 16 then Line16Count = Line16Count + 1
+            if RandomY = 17 then Line17Count = Line17Count + 1
+            if RandomY = 18 then Line18Count = Line18Count + 1
+            if RandomY = 19 then Line19Count = Line19Count + 1
+            if RandomY = 20 then Line20Count = Line20Count + 1
+            if RandomY = 21 then Line21Count = Line21Count + 1
+            if RandomY = 22 then Line22Count = Line22Count + 1
+            if RandomY = 23 then Line23Count = Line23Count + 1
+            if RandomY = 24 then Line24Count = Line24Count + 1
+            if RandomY = 25 then Line25Count = Line25Count + 1
+            if RandomY = 26 then Line26Count = Line26Count + 1
+            if RandomY = 27 then Line27Count = Line27Count + 1
+            if RandomY = 28 then Line28Count = Line28Count + 1
+         endif
+      endif
+      RandomCount = 0
+   else
+      RandomCount = RandomCount + 1
+   endif
+endif
+
+if Level = 9 and LinesBreaked = 30
+   LinesBreaked = 0
+   Level = 10
+   gosub LevelMake
+endif
+
+if Level = 9
+   if RandomCount = 60
+      RandomX = rnd(11) + 1
+      if Line20Count > 5 or Line19Count > 5 or Line18Count > 5
+         RandomY = rnd(13) + 15
+      else
+         RandomY = rnd(8) + 20
+      endif
+      if Grid(RandomX,RandomY,1) = 1
+      else
+         if sprite y(Block1) = Rows(RandomY) or sprite y(Block2) = Rows(RandomY) or sprite y(Block3) = Rows(RandomY) or sprite y(Block4) = Rows(RandomY)
+         else
+            S = S + 1
+            Grid(RandomX,RandomY,3) = S
+            Grid(RandomX,RandomY,1) = 1
+            Grid(RandomX,RandomY,2) = 8
+            sprite Grid(RandomX,RandomY,3),Columns(RandomX,1),Rows(RandomY,1),Grid(RandomX,RandomY,2)
+            if RandomY = 15 then Line15Count = Line15Count + 1
+            if RandomY = 16 then Line16Count = Line16Count + 1
+            if RandomY = 17 then Line17Count = Line17Count + 1
+            if RandomY = 18 then Line18Count = Line18Count + 1
+            if RandomY = 19 then Line19Count = Line19Count + 1
+            if RandomY = 20 then Line20Count = Line20Count + 1
+            if RandomY = 21 then Line21Count = Line21Count + 1
+            if RandomY = 22 then Line22Count = Line22Count + 1
+            if RandomY = 23 then Line23Count = Line23Count + 1
+            if RandomY = 24 then Line24Count = Line24Count + 1
+            if RandomY = 25 then Line25Count = Line25Count + 1
+            if RandomY = 26 then Line26Count = Line26Count + 1
+            if RandomY = 27 then Line27Count = Line27Count + 1
+            if RandomY = 28 then Line28Count = Line28Count + 1
+         endif
+      endif
+      RandomCount = 0
+   else
+      RandomCount = RandomCount + 1
+   endif
+endif
+
+if Level = 10 and LinesBreaked = 35
+   LinesBreaked = 0
+   Level = 11
+   gosub LevelMake
+endif
+
+if Level = 11 and LinesBreaked = 40
+   LinesBreaked = 0
+   Level = 12
+   gosub LevelMake
+endif
+
+if Level = 12 and LinesBreaked = 40
+   LinesBreaked = 0
+   Level = 13
+   gosub LevelMake
+endif
+
+if Level = 12
+   if RandomCount = 500
+      L2 = 2
+      RandomCount = 0
+      goto LineScrollUp
+   else
+      RandomCount = RandomCount + 1
+   endif
+endif
+
+if Level = 13 and LinesBreaked = 40
+   LinesBreaked = 0
+   Level = 14
+   gosub LevelMake
+endif
+
+if Level = 13
+   if RandomCount = 400
+      L2 = 2
+      RandomCount = 0
+      goto LineScrollUp
+   else
+      RandomCount = RandomCount + 1
+   endif
+endif
+
+if Level = 14 and LinesBreaked = 45
+   LinesBreaked = 0
+   Level = 15
+   gosub LevelMake
+endif
+
+if Level = 14
+   if RandomCount = 300
+      L2 = 2
+      RandomCount = 0
+      goto LineScrollUp
+   else
+      RandomCount = RandomCount + 1
+   endif
+endif
+
+if Level = 15 and LinesBreaked = 50
+   LinesBreaked = 0
+   Level = 16
+   gosub LevelMake
+endif
+
+if Level = 16 and LinesBreaked = 50
+   LinesBreaked = 0
+   Level = 17
+   gosub LevelMake
+endif
+
+if Level = 17 and LinesBreaked = 50
+   LinesBreaked = 0
+   Level = 18
+   gosub LevelMake
+endif
+
+if Level = 18 and LinesBreaked = 50
+   LinesBreaked = 0
+   Level = 19
+   gosub LevelMake
+endif
+
+if Level = 19 and LinesBreaked = 50
+   LinesBreaked = 0
+   Level = 20
+   gosub LevelMake
+endif
+
+Rem GameOver
+
+if Figure = 6
+if Grid(5,4,1) = 1 or Grid(6,4,1) = 1 or Grid(7,4,1) = 1
+
+   play sound 4
+
+   for A = 1 to 12
+   for B = 1 to 28
+      if Grid(A,B,1) = 1 then set sprite diffuse Grid(A,B,3),80,80,80
+   next
+   next
+
+   delete sprite Block1
+   delete sprite Block2
+   delete sprite Block3
+   delete sprite Block4
+   sprite 9, 25,260, 12
+
+   if  Score > HighScoreTable(3)
+   goto HighScore
+   endif
+
+   sync
+
+   wait 1000
+   wait key
+
+   for A = 1 to 12
+   for B = 1 to 28
+      if Grid(A,B,1) = 1 then delete sprite Grid(A,B,3)
+   next
+   next
+
+   delete sprite 5
+   delete sprite 6
+   delete sprite 7
+   delete sprite 8
+   delete sprite 9
+
+   goto StartProgram
+
+endif
+endif
+
+if Figure = 1 or Figure = 3 or Figure = 4 or Figure = 5 or Figure = 6
+if Grid(5,3,1) = 1 or Grid(6,3,1) = 1 or Grid(7,3,1) = 1
+
+   play sound 4
+
+   for A = 1 to 12
+   for B = 1 to 28
+      if Grid(A,B,1) = 1 then set sprite diffuse Grid(A,B,3),80,80,80
+   next
+   next
+
+   delete sprite Block1
+   delete sprite Block2
+   delete sprite Block3
+   delete sprite Block4
+   sprite 9, 25,260, 12
+
+   if  Score > HighScoreTable(3)
+   goto HighScore
+   endif
+
+   sync
+
+   wait 1000
+   wait key
+
+   for A = 1 to 12
+   for B = 1 to 28
+      if Grid(A,B,1) = 1 then delete sprite Grid(A,B,3)
+   next
+   next
+
+   delete sprite 5
+   delete sprite 6
+   delete sprite 7
+   delete sprite 8
+   delete sprite 9
+
+   goto StartProgram
+
+endif
+endif
+
+if Figure = 2 or Figure = 7
+if Grid(5,2,1) = 1 or Grid(6,2,1) = 1 or Grid(7,2,1) = 1
+
+   play sound 4
+
+   for A = 1 to 12
+   for B = 1 to 28
+      if Grid(A,B,1) = 1 then set sprite diffuse Grid(A,B,3),80,80,80
+   next
+   next
+
+   delete sprite Block1
+   delete sprite Block2
+   delete sprite Block3
+   delete sprite Block4
+   sprite 9, 25,260, 12
+
+   if  Score > HighScoreTable(3)
+   goto HighScore
+   endif
+
+   sync
+
+   wait 1000
+   wait key
+
+   for A = 1 to 12
+   for B = 1 to 28
+      if Grid(A,B,1) = 1 then delete sprite Grid(A,B,3)
+   next
+   next
+
+   delete sprite 5
+   delete sprite 6
+   delete sprite 7
+   delete sprite 8
+   delete sprite 9
+
+   goto StartProgram
+
+endif
+endif
+
+Rem Figure Can't No Longer Scroll
+
+if ScrollSpeed = 0
+
+if Figure = 1 and Rotation = 1 and FigureY = 26 then gosub ColorGrid
+if Figure = 1 and Rotation = 2 and FigureY = 27 then gosub ColorGrid
+
+if Figure = 1
+   if Rotation = 1
+      if Grid(FigureX,FigureY + 2,1) = 1 or Grid(FigureX - 1,FigureY + 3,1) = 1
+         gosub ColorGrid
+      endif
+   endif
+
+   if Rotation = 2
+      if Grid(FigureX - 1,FigureY + 1,1) = 1 or Grid(FigureX,FigureY + 2,1) = 1 or Grid(FigureX + 1,FigureY + 2,1) = 1
+         gosub ColorGrid
+      endif
+   endif
+endif
+
+if Figure = 2 and Rotation = 1 and FigureY = 28 then gosub ColorGrid
+if Figure = 2 and Rotation = 2 and FigureY = 27 then gosub ColorGrid
+if Figure = 2 and Rotation = 3 and FigureY = 27 then gosub ColorGrid
+if Figure = 2 and Rotation = 4 and FigureY = 27 then gosub ColorGrid
+
+if Figure = 2
+   if Rotation = 1
+      if Grid(FigureX,FigureY + 1,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1
+         gosub ColorGrid
+      endif
+   endif
+
+   if Rotation = 2
+      if Grid(FigureX,FigureY + 2,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1
+         gosub ColorGrid
+      endif
+   endif
+
+   if Rotation = 3
+      if Grid(FigureX,FigureY + 2,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1
+         gosub ColorGrid
+      endif
+   endif
+
+   if Rotation = 4
+      if Grid(FigureX,FigureY + 2,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1
+         gosub ColorGrid
+      endif
+   endif
+endif
+
+if Figure = 3 and Rotation = 1 and FigureY = 26 then gosub ColorGrid
+if Figure = 3 and Rotation = 2 and FigureY = 28 then gosub ColorGrid
+if Figure = 3 and Rotation = 3 and FigureY = 28 then gosub ColorGrid
+if Figure = 3 and Rotation = 4 and FigureY = 27 then gosub ColorGrid
+
+if Figure = 3
+   if Rotation = 1
+      if Grid(FigureX,FigureY + 3,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1
+         gosub ColorGrid
+      endif
+   endif
+
+   if Rotation = 2
+      if Grid(FigureX,FigureY + 1,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1 or Grid(FigureX - 2,FigureY + 1,1) = 1
+         gosub ColorGrid
+      endif
+   endif
+
+   if Rotation = 3
+      if Grid(FigureX,FigureY + 1,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1
+         gosub ColorGrid
+      endif
+   endif
+
+   if Rotation = 4
+      if Grid(FigureX,FigureY + 2,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1 or Grid(FigureX + 2,FigureY + 1,1) = 1
+         gosub ColorGrid
+      endif
+   endif
+endif
+
+if Figure = 4 and Rotation = 1 and FigureY = 26 then gosub ColorGrid
+if Figure = 4 and Rotation = 2 and FigureY = 27 then gosub ColorGrid
+if Figure = 4 and Rotation = 3 and FigureY = 28 then gosub ColorGrid
+if Figure = 4 and Rotation = 4 and FigureY = 28 then gosub ColorGrid
+
+if Figure = 4
+   if Rotation = 1
+      if Grid(FigureX,FigureY + 3,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1
+         gosub ColorGrid
+      endif
+   endif
+
+   if Rotation = 2
+      if Grid(FigureX,FigureY + 2,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1 or Grid(FigureX - 2,FigureY + 1,1) = 1
+         gosub ColorGrid
+      endif
+   endif
+
+   if Rotation = 3
+      if Grid(FigureX,FigureY + 1,1) = 1 or Grid(FigureX - 1,FigureY + 1,1) = 1
+         gosub ColorGrid
+      endif
+   endif
+
+   if Rotation = 4
+      if Grid(FigureX,FigureY + 1,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1 or Grid(FigureX + 2,FigureY + 1,1) = 1
+         gosub ColorGrid
+      endif
+   endif
+endif
+
+if Figure = 5 and Rotation = 1 and FigureY = 26 then gosub ColorGrid
+if Figure = 5 and Rotation = 2 and FigureY = 27 then gosub ColorGrid
+
+if Figure = 5
+   if Rotation = 1
+      if Grid(FigureX,FigureY + 2,1) = 1 or Grid(FigureX + 1,FigureY + 3,1) = 1
+         gosub ColorGrid
+      endif
+   endif
+
+   if Rotation = 2
+      if Grid(FigureX + 1,FigureY + 1,1) = 1 or Grid(FigureX,FigureY + 2,1) = 1 or Grid(FigureX - 1,FigureY + 2,1) = 1
+         gosub ColorGrid
+      endif
+   endif
+endif
+
+if Figure = 6 and Rotation = 1 and FigureY = 25 then gosub ColorGrid
+if Figure = 6 and Rotation = 2 and FigureY = 28 then gosub ColorGrid
+
+if Figure = 6
+   if Rotation = 1
+      if Grid(FigureX,FigureY + 4,1) = 1
+         gosub ColorGrid
+      endif
+   endif
+
+   if Rotation = 2
+      if Grid(FigureX,FigureY + 1,1) = 1 or Grid(FigureX + 1,FigureY + 1,1) = 1 or Grid(FigureX + 2,FigureY + 1,1) = 1 or Grid(FigureX + 3,FigureY + 1,1) = 1
+         gosub ColorGrid
+      endif
+   endif
+endif
+
+if Figure = 7 and FigureY = 27 then gosub ColorGrid
+
+if Figure = 7
+   if Grid(FigureX,FigureY + 2,1) = 1 or Grid(FigureX + 1,FigureY + 2,1) = 1
+    gosub ColorGrid
+   endif
+endif
+
+endif
+
+Rem Line Break
+
+if Line2Count = 12
+   L2 = 2
+   Line2Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line3Count = 12
+   L2 = 3
+   Line3Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line4Count = 12
+   L2 = 4
+   Line4Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line5Count = 12
+   L2 = 5
+   Line5Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line6Count = 12
+   L2 = 6
+   Line6Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line7Count = 12
+   L2 = 7
+   Line7Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line8Count = 12
+   L2 = 8
+   Line8Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line9Count = 12
+   L2 = 9
+   Line9Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line10Count = 12
+   L2 = 10
+   Line10Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line11Count = 12
+   L2 = 11
+   Line11Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line12Count = 12
+   L2 = 12
+   Line12Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line13Count = 12
+   L2 = 13
+   Line13Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line14Count = 12
+   L2 = 14
+   Line14Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line15Count = 12
+   L2 = 15
+   Line15Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line16Count = 12
+   L2 = 16
+   Line16Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line17Count = 12
+   L2 = 17
+   Line17Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line18Count = 12
+   L2 = 18
+   Line18Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line19Count = 12
+   L2 = 19
+   Line19Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line20Count = 12
+   L2 = 20
+   Line20Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line21Count = 12
+   L2 = 21
+   Line21Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line22Count = 12
+   L2 = 22
+   Line22Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line23Count = 12
+   L2 = 23
+   Line23Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line24Count = 12
+   L2 = 24
+   Line24Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line25Count = 12
+   L2 = 25
+   Line25Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line26Count = 12
+   L2 = 26
+   Line26Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line27Count = 12
+   L2 = 27
+   Line27Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+if Line28Count = 12
+   L2 = 28
+   Line28Count = 0
+   Score = Score + 500
+   gosub LineDelete
+   gosub LineScroll
+endif
+
+Rem Auto Scroll
+
+if ScrollSpeed = 0
+   FigureY = FigureY + 1
+   delete sprite Block1
+   delete sprite Block2
+   delete sprite Block3
+   delete sprite Block4
+   ScrollSpeed = LvlSpeed
+   gosub MakeFigure
+   gosub RotateDraw
+else
+   ScrollSpeed = ScrollSpeed - 1
+endif
+
+if upkey() = 1 then wait 25
+
+EndLoop:
+
+paste image 10, 0, 0
+
+set text font "Arial" : set text size 18
+set text to normal
+
+ink rgb(0,0,0), 0
+set cursor 280, 431
+print Level
+set cursor 280, 525
+print Score
+
+LineCombo = 0
+
+sync
+
+wait GameSpeed
+
+loop
+
+Rem ======================================================================================================================
+Rem Line Scrolling
+Rem ======================================================================================================================
+
+LineDelete:
+
+play sound 2
+
+LineCombo = LineCombo + 1
+
+if LineCombo > 1 then Score = Score + 100
+if LineCombo > 2 then Score = Score + 200
+if LineCombo > 3 then Score = Score + 300
+
+LinesBreaked = LinesBreaked + 1
+
+delete sprite Grid(1,L2,3)
+delete sprite Grid(2,L2,3)
+delete sprite Grid(3,L2,3)
+delete sprite Grid(4,L2,3)
+delete sprite Grid(5,L2,3)
+delete sprite Grid(6,L2,3)
+delete sprite Grid(7,L2,3)
+delete sprite Grid(8,L2,3)
+delete sprite Grid(9,L2,3)
+delete sprite Grid(10,L2,3)
+delete sprite Grid(11,L2,3)
+delete sprite Grid(12,L2,3)
+
+return
+
+LineScroll:
+
+GameSpeed = 100
+
+for L = 1 to 12
+
+   if Grid(L,L2 - 1,1) = 1
+      Grid(L,L2 - 1,1) = 0
+      Grid(L,L2,1) = 1
+      Grid(L,L2,2) = Grid(L,L2 - 1,2)
+      Grid(L,L2,3) = Grid(L,L2 - 1,3)
+      sprite Grid(L,L2,3),Columns(L,1),Rows(L2,1),Grid(L,L2,2)
+
+      L2 = L2 - 1
+      if L2 = 2 then Line2Count = Line2Count - 1
+      if L2 = 3 then Line3Count = Line3Count - 1
+      if L2 = 4 then Line4Count = Line4Count - 1
+      if L2 = 5 then Line5Count = Line5Count - 1
+      if L2 = 6 then Line6Count = Line6Count - 1
+      if L2 = 7 then Line7Count = Line7Count - 1
+      if L2 = 8 then Line8Count = Line8Count - 1
+      if L2 = 9 then Line9Count = Line9Count - 1
+      if L2 = 10 then Line10Count = Line10Count - 1
+      if L2 = 11 then Line11Count = Line11Count - 1
+      if L2 = 12 then Line12Count = Line12Count - 1
+      if L2 = 13 then Line13Count = Line13Count - 1
+      if L2 = 14 then Line14Count = Line14Count - 1
+      if L2 = 15 then Line15Count = Line15Count - 1
+      if L2 = 16 then Line16Count = Line16Count - 1
+      if L2 = 17 then Line17Count = Line17Count - 1
+      if L2 = 18 then Line18Count = Line18Count - 1
+      if L2 = 19 then Line19Count = Line19Count - 1
+      if L2 = 20 then Line20Count = Line20Count - 1
+      if L2 = 21 then Line21Count = Line21Count - 1
+      if L2 = 22 then Line22Count = Line22Count - 1
+      if L2 = 23 then Line23Count = Line23Count - 1
+      if L2 = 24 then Line24Count = Line24Count - 1
+      if L2 = 25 then Line25Count = Line25Count - 1
+      if L2 = 26 then Line26Count = Line26Count - 1
+      if L2 = 27 then Line27Count = Line27Count - 1
+      if L2 = 28 then Line28Count = Line28Count - 1
+
+      L2 = L2 + 1
+      if L2 = 2 then Line2Count = Line2Count + 1
+      if L2 = 3 then Line3Count = Line3Count + 1
+      if L2 = 4 then Line4Count = Line4Count + 1
+      if L2 = 5 then Line5Count = Line5Count + 1
+      if L2 = 6 then Line6Count = Line6Count + 1
+      if L2 = 7 then Line7Count = Line7Count + 1
+      if L2 = 8 then Line8Count = Line8Count + 1
+      if L2 = 9 then Line9Count = Line9Count + 1
+      if L2 = 10 then Line10Count = Line10Count + 1
+      if L2 = 11 then Line11Count = Line11Count + 1
+      if L2 = 12 then Line12Count = Line12Count + 1
+      if L2 = 13 then Line13Count = Line13Count + 1
+      if L2 = 14 then Line14Count = Line14Count + 1
+      if L2 = 15 then Line15Count = Line15Count + 1
+      if L2 = 16 then Line16Count = Line16Count + 1
+      if L2 = 17 then Line17Count = Line17Count + 1
+      if L2 = 18 then Line18Count = Line18Count + 1
+      if L2 = 19 then Line19Count = Line19Count + 1
+      if L2 = 20 then Line20Count = Line20Count + 1
+      if L2 = 21 then Line21Count = Line21Count + 1
+      if L2 = 22 then Line22Count = Line22Count + 1
+      if L2 = 23 then Line23Count = Line23Count + 1
+      if L2 = 24 then Line24Count = Line24Count + 1
+      if L2 = 25 then Line25Count = Line25Count + 1
+      if L2 = 26 then Line26Count = Line26Count + 1
+      if L2 = 27 then Line27Count = Line27Count + 1
+      if L2 = 28 then Line28Count = Line28Count + 1
+   else
+      Grid(L,L2,1) = 0
+   endif
+
+next
+
+if L2 = 1
+   paste image 10, 0, 0
+
+   set text font "Arial" : set text size 18
+   set text to normal
+
+   ink rgb(0,0,0), 0
+   set cursor 280, 431
+   print Level
+   set cursor 280, 525
+   print Score
+
+   sync
+   wait GameSpeed
+
+   if LineCombo = 4
+      goto EndLoop
+   else
+      goto SyncEndLoop
+   endif
+else
+   L2 = L2 - 1
+   gosub LineScroll
+endif
+
+LineScrollUp:
+
+for L = 1 to 12
+
+   if Grid(L,L2 + 1,1) = 1
+      Grid(L,L2 + 1,1) = 0
+      Grid(L,L2,1) = 1
+      Grid(L,L2,2) = Grid(L,L2 + 1,2)
+      Grid(L,L2,3) = Grid(L,L2 + 1,3)
+      sprite Grid(L,L2,3),Columns(L,1),Rows(L2,1),Grid(L,L2,2)
+
+      L2 = L2 + 1
+      if L2 = 2 then Line2Count = Line2Count - 1
+      if L2 = 3 then Line3Count = Line3Count - 1
+      if L2 = 4 then Line4Count = Line4Count - 1
+      if L2 = 5 then Line5Count = Line5Count - 1
+      if L2 = 6 then Line6Count = Line6Count - 1
+      if L2 = 7 then Line7Count = Line7Count - 1
+      if L2 = 8 then Line8Count = Line8Count - 1
+      if L2 = 9 then Line9Count = Line9Count - 1
+      if L2 = 10 then Line10Count = Line10Count - 1
+      if L2 = 11 then Line11Count = Line11Count - 1
+      if L2 = 12 then Line12Count = Line12Count - 1
+      if L2 = 13 then Line13Count = Line13Count - 1
+      if L2 = 14 then Line14Count = Line14Count - 1
+      if L2 = 15 then Line15Count = Line15Count - 1
+      if L2 = 16 then Line16Count = Line16Count - 1
+      if L2 = 17 then Line17Count = Line17Count - 1
+      if L2 = 18 then Line18Count = Line18Count - 1
+      if L2 = 19 then Line19Count = Line19Count - 1
+      if L2 = 20 then Line20Count = Line20Count - 1
+      if L2 = 21 then Line21Count = Line21Count - 1
+      if L2 = 22 then Line22Count = Line22Count - 1
+      if L2 = 23 then Line23Count = Line23Count - 1
+      if L2 = 24 then Line24Count = Line24Count - 1
+      if L2 = 25 then Line25Count = Line25Count - 1
+      if L2 = 26 then Line26Count = Line26Count - 1
+      if L2 = 27 then Line27Count = Line27Count - 1
+      if L2 = 28 then Line28Count = Line28Count - 1
+
+      L2 = L2 - 1
+      if L2 = 2 then Line2Count = Line2Count + 1
+      if L2 = 3 then Line3Count = Line3Count + 1
+      if L2 = 4 then Line4Count = Line4Count + 1
+      if L2 = 5 then Line5Count = Line5Count + 1
+      if L2 = 6 then Line6Count = Line6Count + 1
+      if L2 = 7 then Line7Count = Line7Count + 1
+      if L2 = 8 then Line8Count = Line8Count + 1
+      if L2 = 9 then Line9Count = Line9Count + 1
+      if L2 = 10 then Line10Count = Line10Count + 1
+      if L2 = 11 then Line11Count = Line11Count + 1
+      if L2 = 12 then Line12Count = Line12Count + 1
+      if L2 = 13 then Line13Count = Line13Count + 1
+      if L2 = 14 then Line14Count = Line14Count + 1
+      if L2 = 15 then Line15Count = Line15Count + 1
+      if L2 = 16 then Line16Count = Line16Count + 1
+      if L2 = 17 then Line17Count = Line17Count + 1
+      if L2 = 18 then Line18Count = Line18Count + 1
+      if L2 = 19 then Line19Count = Line19Count + 1
+      if L2 = 20 then Line20Count = Line20Count + 1
+      if L2 = 21 then Line21Count = Line21Count + 1
+      if L2 = 22 then Line22Count = Line22Count + 1
+      if L2 = 23 then Line23Count = Line23Count + 1
+      if L2 = 24 then Line24Count = Line24Count + 1
+      if L2 = 25 then Line25Count = Line25Count + 1
+      if L2 = 26 then Line26Count = Line26Count + 1
+      if L2 = 27 then Line27Count = Line27Count + 1
+      if L2 = 28 then Line28Count = Line28Count + 1
+   else
+      Grid(L,L2,1) = 0
+   endif
+
+next
+
+if L2 = 27
+   if UpScrollingBlocks = 0
+      UpScrollingBlocks = 1
+      gosub UpScrollingBlocks
+   endif
+
+   if UpScrollingBlocks = 1
+      UpScrollingBlocks = 0
+      gosub UpScrollingBlocks
+   endif
+else
+   L2 = L2 + 1
+   gosub LineScrollUp
+endif
+
+UpScrollingBlocks:
+
+if UpScrollingBlocks = 1
+   A = 1
+   B = 28
+   gosub DrawSilverBlock
+   A = 3
+   B = 28
+   gosub DrawSilverBlock
+   A = 5
+   B = 28
+   gosub DrawSilverBlock
+   A = 7
+   B = 28
+   gosub DrawSilverBlock
+   A = 9
+   B = 28
+   gosub DrawSilverBlock
+   A = 11
+   B = 28
+   gosub DrawSilverBlock
+endif
+
+if UpScrollingBlocks = 0
+   A = 2
+   B = 28
+   gosub DrawSilverBlock
+   A = 4
+   B = 28
+   gosub DrawSilverBlock
+   A = 6
+   B = 28
+   gosub DrawSilverBlock
+   A = 8
+   B = 28
+   gosub DrawSilverBlock
+   A = 10
+   B = 28
+   gosub DrawSilverBlock
+   A = 12
+   B = 28
+   gosub DrawSilverBlock
+endif
+
+Line28Count = 6
+
+FigureY = FigureY - 2
+
+gosub MakeFigure
+gosub RotateDraw
+
+goto SyncEndLoop
+
+Rem =======================================================================================================================
+Rem FigureMaking
+Rem =======================================================================================================================
+
+MakeNewFigure:
+
+Figure = ComingFigure
+ComingFigure = RandomFigure
+if Figure = 1
+FigureX = 7
+else
+FigureX = 6
+endif
+if Figure = 2
+FigureY = 2
+else
+FigureY = 1
+endif
+Rotation = 1
+
+gosub MakeFigure:
+goto SyncEndLoop
+
+MakeFigure:
+
+Rem Blue Right Thunder
+if Figure = 1
+
+   sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+
+   sprite Block2, Columns(FigureX,1), Rows(FigureY,1) + 20, Figure
+
+   sprite Block3, Columns(FigureX,1) - 20, Rows(FigureY,1) + 20, Figure
+
+   sprite Block4, Columns(FigureX,1) - 20, Rows(FigureY,1) + 40, Figure
+
+endif
+
+Rem Green Triangle
+if Figure = 2
+
+   sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+
+   sprite Block2, Columns(FigureX,1), Rows(FigureY,1) - 20, Figure
+
+   sprite Block3, Columns(FigureX,1) + 20, Rows(FigureY,1), Figure
+
+   sprite Block4, Columns(FigureX,1) - 20, Rows(FigureY,1), Figure
+
+endif
+
+Rem LightBlue Left T
+if Figure = 3
+
+   sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+
+   sprite Block2, Columns(FigureX,1) - 20, Rows(FigureY,1), Figure
+
+   sprite Block3, Columns(FigureX,1), Rows(FigureY,1) + 20, Figure
+
+   sprite Block4, Columns(FigureX,1), Rows(FigureY,1) + 40, Figure
+
+endif
+
+Rem Ornage Right T
+if Figure = 4
+
+   sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+
+   sprite Block2, Columns(FigureX,1) + 20, Rows(FigureY,1), Figure
+
+   sprite Block3, Columns(FigureX,1), Rows(FigureY,1) + 20, Figure
+
+   sprite Block4, Columns(FigureX,1), Rows(FigureY,1) + 40, Figure
+
+endif
+
+Rem Purple Left Thunder
+if Figure = 5
+
+   sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+
+   sprite Block2, Columns(FigureX,1), Rows(FigureY,1) + 20, Figure
+
+   sprite Block3, Columns(FigureX,1) + 20, Rows(FigureY,1) + 20, Figure
+
+   sprite Block4, Columns(FigureX,1) + 20, Rows(FigureY,1) + 40, Figure
+
+endif
+
+Rem Red Line
+if Figure = 6
+
+   sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+
+   sprite Block2, Columns(FigureX,1), Rows(FigureY,1) + 20, Figure
+
+   sprite Block3, Columns(FigureX,1), Rows(FigureY,1) + 40, Figure
+
+   sprite Block4, Columns(FigureX,1), Rows(FigureY,1) + 60, Figure
+
+endif
+
+Rem Yellow Square
+if Figure = 7
+
+   sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+
+   sprite Block2, Columns(FigureX,1) + 20, Rows(FigureY,1), Figure
+
+   sprite Block3, Columns(FigureX,1), Rows(FigureY,1) + 20, Figure
+
+   sprite Block4, Columns(FigureX,1) + 20, Rows(FigureY,1) + 20, Figure
+
+endif
+
+Rem Coming Figure Making
+
+if ComingFigure = 1
+   sprite 5, 322, 66, 1
+   sprite 6, 322, 86, 1
+   sprite 7, 302, 86, 1
+   sprite 8, 302, 106, 1
+endif
+
+if ComingFigure = 2
+   sprite 5, 312, 96, 2
+   sprite 6, 312, 76, 2
+   sprite 7, 332, 96, 2
+   sprite 8, 292, 96, 2
+endif
+
+if ComingFigure = 3
+   sprite 5, 302, 66, 3
+   sprite 6, 322, 66, 3
+   sprite 7, 322, 86, 3
+   sprite 8, 322, 106, 3
+endif
+
+if ComingFigure = 4
+   sprite 5, 322, 66, 4
+   sprite 6, 302, 66, 4
+   sprite 7, 302, 86, 4
+   sprite 8, 302, 106, 4
+endif
+
+if ComingFigure = 5
+   sprite 5, 302, 66, 5
+   sprite 6, 302, 86, 5
+   sprite 7, 322, 86, 5
+   sprite 8, 322, 106, 5
+endif
+
+if ComingFigure = 6
+   sprite 5, 312, 56, 6
+   sprite 6, 312, 76, 6
+   sprite 7, 312, 96, 6
+   sprite 8, 312, 116, 6
+endif
+
+if ComingFigure = 7
+   sprite 5, 302, 76, 7
+   sprite 6, 302, 96, 7
+   sprite 7, 322, 76, 7
+   sprite 8, 322, 96, 7
+endif
+
+return
+
+Rem =======================================================================================================================
+Rem LevelMaking
+Rem =======================================================================================================================
+
+LevelMake:
+
+play sound 6
+
+for A = 1 to 12
+for B = 1 to 28
+    if Grid(A,B,1) = 1 then delete sprite Grid(A,B,3)
+next
+next
+
+dim Grid(12,28,3)
+
+Line2Count = 0
+Line3Count = 0
+Line4Count = 0
+Line5Count = 0
+Line6Count = 0
+Line7Count = 0
+Line8Count = 0
+Line9Count = 0
+Line10Count = 0
+Line11Count = 0
+Line12Count = 0
+Line13Count = 0
+Line14Count = 0
+Line15Count = 0
+Line16Count = 0
+Line17Count = 0
+Line18Count = 0
+Line19Count = 0
+Line20Count = 0
+Line21Count = 0
+Line22Count = 0
+Line23Count = 0
+Line24Count = 0
+Line25Count = 0
+Line26Count = 0
+Line27Count = 0
+Line28Count = 0
+
+if Level = 2
+
+   LvlSpeed = 4
+
+endif
+
+if Level = 3
+
+   LvlSpeed = 4
+
+   A = 6
+   B = 28
+   gosub DrawSilverBlock
+   A = 7
+   B = 28
+   gosub DrawSilverBlock
+   A = 4
+   B = 28
+   gosub DrawSilverBlock
+   A = 9
+   B = 28
+   gosub DrawSilverBlock
+   A = 5
+   B = 27
+   gosub DrawSilverBlock
+   A = 8
+   B = 27
+   gosub DrawSilverBlock
+   A = 6
+   B = 26
+   gosub DrawSilverBlock
+   A = 7
+   B = 26
+   gosub DrawSilverBlock
+   A = 1
+   B = 27
+   gosub DrawSilverBlock
+   A = 2
+   B = 28
+   gosub DrawSilverBlock
+   A = 12
+   B = 27
+   gosub DrawSilverBlock
+   A = 11
+   B = 28
+   gosub DrawSilverBlock
+
+   Line28Count = 6
+   Line27Count = 4
+   Line26Count = 2
+
+endif
+
+if Level = 4
+
+   LvlSpeed = 4
+
+   A = 3
+   B = 28
+   gosub DrawSilverBlock
+   A = 3
+   B = 27
+   gosub DrawSilverBlock
+   A = 3
+   B = 26
+   gosub DrawSilverBlock
+   A = 3
+   B = 25
+   gosub DrawSilverBlock
+   A = 3
+   B = 24
+   gosub DrawSilverBlock
+   A = 3
+   B = 23
+   gosub DrawSilverBlock
+   A = 3
+   B = 22
+   gosub DrawSilverBlock
+   A = 4
+   B = 28
+   gosub DrawSilverBlock
+   A = 4
+   B = 27
+   gosub DrawSilverBlock
+   A = 4
+   B = 26
+   gosub DrawSilverBlock
+   A = 4
+   B = 25
+   gosub DrawSilverBlock
+   A = 4
+   B = 24
+   gosub DrawSilverBlock
+   A = 4
+   B = 23
+   gosub DrawSilverBlock
+   A = 4
+   B = 22
+   gosub DrawSilverBlock
+   A = 10
+   B = 28
+   gosub DrawSilverBlock
+   A = 10
+   B = 27
+   gosub DrawSilverBlock
+   A = 10
+   B = 26
+   gosub DrawSilverBlock
+   A = 10
+   B = 25
+   gosub DrawSilverBlock
+   A = 10
+   B = 24
+   gosub DrawSilverBlock
+   A = 10
+   B = 23
+   gosub DrawSilverBlock
+   A = 10
+   B = 22
+   gosub DrawSilverBlock
+   A = 9
+   B = 28
+   gosub DrawSilverBlock
+   A = 9
+   B = 27
+   gosub DrawSilverBlock
+   A = 9
+   B = 26
+   gosub DrawSilverBlock
+   A = 9
+   B = 25
+   gosub DrawSilverBlock
+   A = 9
+   B = 24
+   gosub DrawSilverBlock
+   A = 9
+   B = 23
+   gosub DrawSilverBlock
+   A = 9
+   B = 22
+   gosub DrawSilverBlock
+
+   Line28Count = 4
+   Line27Count = 4
+   Line26Count = 4
+   Line25Count = 4
+   Line24Count = 4
+   Line23Count = 4
+   Line22Count = 4
+
+endif
+
+if Level = 5
+
+   LvlSpeed = 4
+
+   A = 1
+   B = 28
+   gosub DrawSilverBlock
+   A = 3
+   B = 28
+   gosub DrawSilverBlock
+   A = 5
+   B = 28
+   gosub DrawSilverBlock
+   A = 7
+   B = 28
+   gosub DrawSilverBlock
+   A = 9
+   B = 28
+   gosub DrawSilverBlock
+   A = 11
+   B = 28
+   gosub DrawSilverBlock
+   A = 2
+   B = 27
+   gosub DrawSilverBlock
+   A = 4
+   B = 27
+   gosub DrawSilverBlock
+   A = 6
+   B = 27
+   gosub DrawSilverBlock
+   A = 8
+   B = 27
+   gosub DrawSilverBlock
+   A = 10
+   B = 27
+   gosub DrawSilverBlock
+   A = 12
+   B = 27
+   gosub DrawSilverBlock
+   A = 1
+   B = 26
+   gosub DrawSilverBlock
+   A = 3
+   B = 26
+   gosub DrawSilverBlock
+   A = 5
+   B = 26
+   gosub DrawSilverBlock
+   A = 7
+   B = 26
+   gosub DrawSilverBlock
+   A = 9
+   B = 26
+   gosub DrawSilverBlock
+   A = 11
+   B = 26
+   gosub DrawSilverBlock
+   A = 2
+   B = 25
+   gosub DrawSilverBlock
+   A = 4
+   B = 25
+   gosub DrawSilverBlock
+   A = 6
+   B = 25
+   gosub DrawSilverBlock
+   A = 8
+   B = 25
+   gosub DrawSilverBlock
+   A = 10
+   B = 25
+   gosub DrawSilverBlock
+   A = 12
+   B = 25
+   gosub DrawSilverBlock
+   A = 1
+   B = 24
+   gosub DrawSilverBlock
+   A = 3
+   B = 24
+   gosub DrawSilverBlock
+   A = 5
+   B = 24
+   gosub DrawSilverBlock
+   A = 7
+   B = 24
+   gosub DrawSilverBlock
+   A = 9
+   B = 24
+   gosub DrawSilverBlock
+   A = 11
+   B = 24
+   gosub DrawSilverBlock
+   A = 2
+   B = 23
+   gosub DrawSilverBlock
+   A = 4
+   B = 23
+   gosub DrawSilverBlock
+   A = 6
+   B = 23
+   gosub DrawSilverBlock
+   A = 8
+   B = 23
+   gosub DrawSilverBlock
+   A = 10
+   B = 23
+   gosub DrawSilverBlock
+   A = 12
+   B = 23
+   gosub DrawSilverBlock
+
+   Line28Count = 6
+   Line27Count = 6
+   Line26Count = 6
+   Line25Count = 6
+   Line24Count = 6
+   Line23Count = 6
+
+
+endif
+
+if Level = 6
+
+   LvlSpeed = 4
+
+   A = 3
+   B = 19
+   gosub DrawSilverBlock
+   A = 5
+   B = 19
+   gosub DrawSilverBlock
+   A = 7
+   B = 19
+   gosub DrawSilverBlock
+   A = 9
+   B = 19
+   gosub DrawSilverBlock
+   A = 4
+   B = 18
+   gosub DrawSilverBlock
+   A = 6
+   B = 18
+   gosub DrawSilverBlock
+   A = 8
+   B = 18
+   gosub DrawSilverBlock
+   A = 10
+   B = 18
+   gosub DrawSilverBlock
+
+   Line19Count = 4
+   Line18Count = 4
+
+endif
+
+if Level = 7
+
+   LvlSpeed = 3
+
+endif
+
+if Level = 8
+
+   RandomCount = 0
+   LvlSpeed = 3
+
+endif
+
+if Level = 9
+
+   RandomCount = 0
+   LvlSpeed = 3
+
+endif
+
+
+if Level = 10
+
+   LvlSpeed = 2
+
+endif
+
+if Level = 11
+
+   LvlSpeed = 2
+
+   A = 1
+   B = 28
+   gosub DrawSilverBlock
+   A = 3
+   B = 28
+   gosub DrawSilverBlock
+   A = 5
+   B = 28
+   gosub DrawSilverBlock
+   A = 7
+   B = 28
+   gosub DrawSilverBlock
+   A = 9
+   B = 28
+   gosub DrawSilverBlock
+   A = 11
+   B = 28
+   gosub DrawSilverBlock
+   A = 2
+   B = 27
+   gosub DrawSilverBlock
+   A = 4
+   B = 27
+   gosub DrawSilverBlock
+   A = 6
+   B = 27
+   gosub DrawSilverBlock
+   A = 8
+   B = 27
+   gosub DrawSilverBlock
+   A = 10
+   B = 27
+   gosub DrawSilverBlock
+   A = 12
+   B = 27
+   gosub DrawSilverBlock
+   A = 1
+   B = 26
+   gosub DrawSilverBlock
+   A = 3
+   B = 26
+   gosub DrawSilverBlock
+   A = 5
+   B = 26
+   gosub DrawSilverBlock
+   A = 7
+   B = 26
+   gosub DrawSilverBlock
+   A = 9
+   B = 26
+   gosub DrawSilverBlock
+   A = 11
+   B = 26
+   gosub DrawSilverBlock
+   A = 2
+   B = 25
+   gosub DrawSilverBlock
+   A = 4
+   B = 25
+   gosub DrawSilverBlock
+   A = 6
+   B = 25
+   gosub DrawSilverBlock
+   A = 8
+   B = 25
+   gosub DrawSilverBlock
+   A = 10
+   B = 25
+   gosub DrawSilverBlock
+   A = 12
+   B = 25
+   gosub DrawSilverBlock
+   A = 1
+   B = 24
+   gosub DrawSilverBlock
+   A = 3
+   B = 24
+   gosub DrawSilverBlock
+   A = 5
+   B = 24
+   gosub DrawSilverBlock
+   A = 7
+   B = 24
+   gosub DrawSilverBlock
+   A = 9
+   B = 24
+   gosub DrawSilverBlock
+   A = 11
+   B = 24
+   gosub DrawSilverBlock
+   A = 2
+   B = 23
+   gosub DrawSilverBlock
+   A = 4
+   B = 23
+   gosub DrawSilverBlock
+   A = 6
+   B = 23
+   gosub DrawSilverBlock
+   A = 8
+   B = 23
+   gosub DrawSilverBlock
+   A = 10
+   B = 23
+   gosub DrawSilverBlock
+   A = 12
+   B = 23
+   gosub DrawSilverBlock
+   A = 1
+   B = 22
+   gosub DrawSilverBlock
+   A = 3
+   B = 22
+   gosub DrawSilverBlock
+   A = 5
+   B = 22
+   gosub DrawSilverBlock
+   A = 7
+   B = 22
+   gosub DrawSilverBlock
+   A = 9
+   B = 22
+   gosub DrawSilverBlock
+   A = 11
+   B = 22
+   gosub DrawSilverBlock
+   A = 2
+   B = 21
+   gosub DrawSilverBlock
+   A = 4
+   B = 21
+   gosub DrawSilverBlock
+   A = 6
+   B = 21
+   gosub DrawSilverBlock
+   A = 8
+   B = 21
+   gosub DrawSilverBlock
+   A = 10
+   B = 21
+   gosub DrawSilverBlock
+   A = 12
+   B = 21
+   gosub DrawSilverBlock
+   A = 1
+   B = 20
+   gosub DrawSilverBlock
+   A = 3
+   B = 20
+   gosub DrawSilverBlock
+   A = 5
+   B = 20
+   gosub DrawSilverBlock
+   A = 7
+   B = 20
+   gosub DrawSilverBlock
+   A = 9
+   B = 20
+   gosub DrawSilverBlock
+   A = 11
+   B = 20
+   gosub DrawSilverBlock
+   A = 2
+   B = 19
+   gosub DrawSilverBlock
+   A = 4
+   B = 19
+   gosub DrawSilverBlock
+   A = 6
+   B = 19
+   gosub DrawSilverBlock
+   A = 8
+   B = 19
+   gosub DrawSilverBlock
+   A = 10
+   B = 19
+   gosub DrawSilverBlock
+   A = 12
+   B = 19
+   gosub DrawSilverBlock
+   A = 1
+   B = 18
+   gosub DrawSilverBlock
+   A = 3
+   B = 18
+   gosub DrawSilverBlock
+   A = 5
+   B = 18
+   gosub DrawSilverBlock
+   A = 7
+   B = 18
+   gosub DrawSilverBlock
+   A = 9
+   B = 18
+   gosub DrawSilverBlock
+   A = 11
+   B = 18
+   gosub DrawSilverBlock
+
+   Line28Count = 6
+   Line27Count = 6
+   Line26Count = 6
+   Line25Count = 6
+   Line24Count = 6
+   Line23Count = 6
+   Line22Count = 6
+   Line21Count = 6
+   Line20Count = 6
+   Line19Count = 6
+   Line18Count = 6
+
+endif
+
+if Level = 12
+
+   RandomCount = 0
+   LvlSpeed = 2
+
+endif
+
+if Level = 13
+
+   RandomCount = 0
+   LvlSpeed = 2
+
+endif
+
+if Level = 14
+
+   RandomCount = 0
+   LvlSpeed = 2
+
+endif
+
+if Level = 15
+
+   LvlSpeed = 1
+
+endif
+
+if Level = 16
+
+   LvlSpeed = 1
+
+endif
+
+if Level = 17
+
+   LvlSpeed = 1
+
+endif
+
+if Level = 18
+
+   LvlSpeed = 1
+
+endif
+
+if Level = 19
+
+   LvlSpeed = 1
+
+endif
+
+if Level = 20
+
+   LvlSpeed = 1
+
+endif
+
+paste image 10,0,0
+
+set text font "Arial" : set text size 18
+set text to normal
+
+ink rgb(0,0,0), 0
+set cursor 280, 431
+print Level
+set cursor 280, 525
+print Score
+
+sprite 9, 50, 260, 13
+
+sync
+
+wait 1200
+
+delete sprite 9
+
+goto SyncEndLoop
+
+DrawSilverBlock:
+
+S = S + 1
+Grid(A,B,1) = 1
+Grid(A,B,2) = 8
+Grid(A,B,3) = S
+
+sprite S,Columns(A,1),Rows(B,1),8
+
+return
+
+Rem =======================================================================================================================
+Rem Color Grids
+Rem =======================================================================================================================
+
+ColorGrid:
+
+play sound 3
+
+if Figure = 1
+   if Rotation = 1
+
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      gosub MakeNewFigure
+      goto SyncEndLoop
+
+   endif
+
+   if Rotation = 2
+
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      gosub MakeNewFigure
+      goto SyncEndLoop
+
+   endif
+endif
+
+if Figure = 2
+   if Rotation = 1
+
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      FigureY = FigureY - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      gosub MakeNewFigure
+      goto SyncEndLoop
+
+   endif
+
+   if Rotation = 2
+
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX - 1
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureY = FigureY - 2
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      gosub MakeNewFigure
+      goto SyncEndLoop
+
+   endif
+
+   if Rotation = 3
+
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      FigureY = FigureY - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX - 2
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      gosub MakeNewFigure
+      goto SyncEndLoop
+
+   endif
+
+   if Rotation = 4
+
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureY = FigureY - 2
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      gosub MakeNewFigure
+      goto SyncEndLoop
+
+   endif
+endif
+
+if Figure = 3
+   if Rotation = 1
+
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      gosub MakeNewFigure
+      goto SyncEndLoop
+
+   endif
+
+   if Rotation = 2
+
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureY = FigureY - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX - 1
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      gosub MakeNewFigure
+      goto SyncEndLoop
+
+   endif
+
+   if Rotation = 3
+
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX - 1
+      FigureY = FigureY - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureY = FigureY - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      gosub MakeNewFigure
+      goto SyncEndLoop
+
+   endif
+
+   if Rotation = 4
+
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      FigureY = FigureY - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      gosub MakeNewFigure
+      goto SyncEndLoop
+
+   endif
+endif
+
+if Figure = 4
+   if Rotation = 1
+
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX - 1
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      gosub MakeNewFigure
+      goto SyncEndLoop
+
+   endif
+
+   if Rotation = 2
+
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX - 1
+      FigureY = FigureY - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      gosub MakeNewFigure
+      goto SyncEndLoop
+
+   endif
+
+   if Rotation = 3
+
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      FigureY = FigureY - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureY = FigureY - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      gosub MakeNewFigure
+      goto SyncEndLoop
+
+   endif
+
+   if Rotation = 4
+
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureY = FigureY - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      gosub MakeNewFigure
+      goto SyncEndLoop
+
+   endif
+endif
+
+if Figure = 5
+   if Rotation = 1
+
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      gosub MakeNewFigure
+      goto SyncEndLoop
+
+   endif
+
+   if Rotation = 2
+
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX - 1
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX - 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      gosub MakeNewFigure
+      goto SyncEndLoop
+
+   endif
+endif
+
+if Figure = 6
+   if Rotation = 1
+
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureY = FigureY + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      gosub MakeNewFigure
+      goto SyncEndLoop
+
+   endif
+
+   if Rotation = 2
+
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      FigureX = FigureX + 1
+      Grid(FigureX,FigureY,1) = 1
+      gosub DrawGrid
+      gosub MakeNewFigure
+      goto SyncEndLoop
+
+   endif
+endif
+
+if Figure = 7
+
+   Grid(FigureX,FigureY,1) = 1
+   gosub DrawGrid
+   FigureX = FigureX + 1
+   Grid(FigureX,FigureY,1) = 1
+   gosub DrawGrid
+   FigureY = FigureY + 1
+   Grid(FigureX,FigureY,1) = 1
+   gosub DrawGrid
+   FigureX = FigureX - 1
+   Grid(FigureX,FigureY,1) = 1
+   gosub DrawGrid
+   gosub MakeNewFigure
+   goto SyncEndLoop
+
+endif
+
+DrawGrid:
+
+GridColorA = FigureX
+GridColorB = FigureY
+
+if Figure = 1 then Grid(GridColorA,GridColorB,2) = 1
+
+if Figure = 2 then Grid(GridColorA,GridColorB,2) = 2
+
+if Figure = 3 then Grid(GridColorA,GridColorB,2) = 3
+
+if Figure = 4 then Grid(GridColorA,GridColorB,2) = 4
+
+if Figure = 5 then Grid(GridColorA,GridColorB,2) = 5
+
+if Figure = 6 then Grid(GridColorA,GridColorB,2) = 6
+
+if Figure = 7 then Grid(GridColorA,GridColorB,2) = 7
+
+
+S = S + 1
+Grid(GridColorA,GridColorB,3) = S
+
+if Grid(GridColorA,GridColorB,1) = 1
+
+   if Grid(GridColorA,GridColorB,2) = 1
+      sprite S, Columns(GridColorA,1), Rows(GridColorB,1), 1
+   endif
+
+   if Grid(GridColorA,GridColorB,2) = 2
+      sprite S, Columns(GridColorA,1), Rows(GridColorB,1), 2
+   endif
+
+   if Grid(GridColorA,GridColorB,2) = 3
+      sprite S, Columns(GridColorA,1), Rows(GridColorB,1), 3
+   endif
+
+   if Grid(GridColorA,GridColorB,2) = 4
+      sprite S, Columns(GridColorA,1), Rows(GridColorB,1), 4
+   endif
+
+   if Grid(GridColorA,GridColorB,2) = 5
+      sprite S, Columns(GridColorA,1), Rows(GridColorB,1), 5
+   endif
+
+   if Grid(GridColorA,GridColorB,2) = 6
+      sprite S, Columns(GridColorA,1), Rows(GridColorB,1), 6
+   endif
+
+   if Grid(GridColorA,GridColorB,2) = 7
+      sprite S, Columns(GridColorA,1), Rows(GridColorB,1), 7
+   endif
+
+   if Grid(GridColorA,GridColorB,2) = 8
+      sprite S, Columns(GridColorA,1), Rows(GridColorB,1), 8
+   endif
+
+endif
+
+if FigureY = 2 then Line2Count = Line2Count + 1
+if FigureY = 3 then Line3Count = Line3Count + 1
+if FigureY = 4 then Line4Count = Line4Count + 1
+if FigureY = 5 then Line5Count = Line5Count + 1
+if FigureY = 6 then Line6Count = Line6Count + 1
+if FigureY = 7 then Line7Count = Line7Count + 1
+if FigureY = 8 then Line8Count = Line8Count + 1
+if FigureY = 9 then Line9Count = Line9Count + 1
+if FigureY = 10 then Line10Count = Line10Count + 1
+if FigureY = 11 then Line11Count = Line11Count + 1
+if FigureY = 12 then Line12Count = Line12Count + 1
+if FigureY = 13 then Line13Count = Line13Count + 1
+if FigureY = 14 then Line14Count = Line14Count + 1
+if FigureY = 15 then Line15Count = Line15Count + 1
+if FigureY = 16 then Line16Count = Line16Count + 1
+if FigureY = 17 then Line17Count = Line17Count + 1
+if FigureY = 18 then Line18Count = Line18Count + 1
+if FigureY = 19 then Line19Count = Line19Count + 1
+if FigureY = 20 then Line20Count = Line20Count + 1
+if FigureY = 21 then Line21Count = Line21Count + 1
+if FigureY = 22 then Line22Count = Line22Count + 1
+if FigureY = 23 then Line23Count = Line23Count + 1
+if FigureY = 24 then Line24Count = Line24Count + 1
+if FigureY = 25 then Line25Count = Line25Count + 1
+if FigureY = 26 then Line26Count = Line26Count + 1
+if FigureY = 27 then Line27Count = Line27Count + 1
+if FigureY = 28 then Line28Count = Line28Count + 1
+
+return
+
+Rem =======================================================================================================================
+Rem Figure Movement
+Rem =======================================================================================================================
+
+RightKeyMove:
+
+FigureX = FigureX + 1
+
+BlockX = Sprite X(Block1)
+BlockY = Sprite Y(Block1)
+sprite Block1, BlockX + 20, BlockY, Figure
+
+BlockX = Sprite X(Block2)
+BlockY = Sprite Y(Block2)
+sprite Block2, BlockX + 20, BlockY, Figure
+
+BlockX = Sprite X(Block3)
+BlockY = Sprite Y(Block3)
+sprite Block3, BlockX + 20, BlockY, Figure
+
+BlockX = Sprite X(Block4)
+BlockY = Sprite Y(Block4)
+sprite Block4, BlockX + 20, BlockY, Figure
+
+gosub SyncEndLoop
+
+LeftKeyMove:
+
+FigureX = FigureX - 1
+
+BlockX = Sprite X(Block1)
+BlockY = Sprite Y(Block1)
+sprite Block1, BlockX - 20, BlockY, Figure
+
+BlockX = Sprite X(Block2)
+BlockY = Sprite Y(Block2)
+sprite Block2, BlockX - 20, BlockY, Figure
+
+BlockX = Sprite X(Block3)
+BlockY = Sprite Y(Block3)
+sprite Block3, BlockX - 20, BlockY, Figure
+
+BlockX = Sprite X(Block4)
+BlockY = Sprite Y(Block4)
+sprite Block4, BlockX - 20, BlockY, Figure
+
+gosub SyncEndLoop
+
+RotateMove:
+
+play sound 1
+
+if Figure = 1 and Rotation = 1
+   Rotation = 2
+   gosub RotateDraw
+   endif
+if Figure = 1 and Rotation = 2
+   Rotation = 1
+   gosub RotateDraw
+   endif
+
+if Figure = 2 and Rotation = 1
+   Rotation = 2
+   gosub RotateDraw
+   endif
+if Figure = 2 and Rotation = 2
+   Rotation = 3
+   gosub RotateDraw
+   endif
+if Figure = 2 and Rotation = 3
+   Rotation = 4
+   gosub RotateDraw
+   endif
+if Figure = 2 and Rotation = 4
+   Rotation = 1
+   gosub RotateDraw
+   endif
+
+if Figure = 3 and Rotation = 1
+   Rotation = 2
+   gosub RotateDraw
+   endif
+if Figure = 3 and Rotation = 2
+   Rotation = 3
+   gosub RotateDraw
+   endif
+if Figure = 3 and Rotation = 3
+   Rotation = 4
+   gosub RotateDraw
+   endif
+if Figure = 3 and Rotation = 4
+   Rotation = 1
+   gosub RotateDraw
+   endif
+
+if Figure = 4 and Rotation = 1
+   Rotation = 2
+   gosub RotateDraw
+   endif
+if Figure = 4 and Rotation = 2
+   Rotation = 3
+   gosub RotateDraw
+   endif
+if Figure = 4 and Rotation = 3
+   Rotation = 4
+   gosub RotateDraw
+   endif
+if Figure = 4 and Rotation = 4
+   Rotation = 1
+   gosub RotateDraw
+   endif
+
+if Figure = 5 and Rotation = 1
+   Rotation = 2
+   gosub RotateDraw
+   endif
+if Figure = 5 and Rotation = 2
+   Rotation = 1
+   gosub RotateDraw
+   endif
+
+if Figure = 6 and Rotation = 1
+   Rotation = 2
+   gosub RotateDraw
+   endif
+if Figure = 6 and Rotation = 2
+   Rotation = 1
+   gosub RotateDraw
+   endif
+
+RotateDraw:
+
+if Figure = 1
+   if Rotation = 2
+
+      sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+      sprite Block2, Columns(FigureX,1) - 20, Rows(FigureY,1), Figure
+      sprite Block3, Columns(FigureX,1), Rows(FigureY,1) + 20, Figure
+      sprite Block4, Columns(FigureX,1) + 20, Rows(FigureY,1) + 20, Figure
+
+      gosub SyncEndLoop
+
+   endif
+
+   if Rotation = 1
+
+      sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+      sprite Block2, Columns(FigureX,1), Rows(FigureY,1) + 20, Figure
+      sprite Block3, Columns(FigureX,1) - 20, Rows(FigureY,1) + 20, Figure
+      sprite Block4, Columns(FigureX,1) - 20, Rows(FigureY,1) + 40, Figure
+
+      gosub SyncEndLoop
+
+   endif
+endif
+
+if Figure = 2
+   if Rotation = 2
+
+      sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+      sprite Block2, Columns(FigureX,1) + 20, Rows(FigureY,1), Figure
+      sprite Block3, Columns(FigureX,1), Rows(FigureY,1) + 20, Figure
+      sprite Block4, Columns(FigureX,1), Rows(FigureY,1) - 20, Figure
+
+      gosub SyncEndLoop
+
+   endif
+
+   if Rotation = 3
+
+      sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+      sprite Block2, Columns(FigureX,1), Rows(FigureY,1) + 20, Figure
+      sprite Block3, Columns(FigureX,1) + 20, Rows(FigureY,1), Figure
+      sprite Block4, Columns(FigureX,1) - 20, Rows(FigureY,1), Figure
+
+      gosub SyncEndLoop
+
+   endif
+
+   if Rotation = 4
+
+      sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+      sprite Block2, Columns(FigureX,1) - 20, Rows(FigureY,1), Figure
+      sprite Block3, Columns(FigureX,1), Rows(FigureY,1) + 20, Figure
+      sprite Block4, Columns(FigureX,1), Rows(FigureY,1) - 20, Figure
+
+      gosub SyncEndLoop
+
+   endif
+
+   if Rotation = 1
+
+      sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+      sprite Block2, Columns(FigureX,1), Rows(FigureY,1) - 20, Figure
+      sprite Block3, Columns(FigureX,1) + 20, Rows(FigureY,1), Figure
+      sprite Block4, Columns(FigureX,1) - 20, Rows(FigureY,1), Figure
+
+      gosub SyncEndLoop
+
+   endif
+endif
+
+if Figure = 3
+   if Rotation = 2
+
+      sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+      sprite Block2, Columns(FigureX,1), Rows(FigureY,1) - 20, Figure
+      sprite Block3, Columns(FigureX,1) - 20, Rows(FigureY,1), Figure
+      sprite Block4, Columns(FigureX,1) - 40, Rows(FigureY,1), Figure
+
+      gosub SyncEndLoop
+
+   endif
+
+   if Rotation = 3
+
+      sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+      sprite Block2, Columns(FigureX,1) + 20, Rows(FigureY,1), Figure
+      sprite Block3, Columns(FigureX,1), Rows(FigureY,1) - 20, Figure
+      sprite Block4, Columns(FigureX,1), Rows(FigureY,1) - 40, Figure
+
+      gosub SyncEndLoop
+
+   endif
+
+   if Rotation = 4
+
+      sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+      sprite Block2, Columns(FigureX,1), Rows(FigureY,1) + 20, Figure
+      sprite Block3, Columns(FigureX,1) + 20, Rows(FigureY,1), Figure
+      sprite Block4, Columns(FigureX,1) + 40, Rows(FigureY,1), Figure
+
+      gosub SyncEndLoop
+
+   endif
+
+   if Rotation = 1
+
+      sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+      sprite Block2, Columns(FigureX,1) - 20, Rows(FigureY,1), Figure
+      sprite Block3, Columns(FigureX,1), Rows(FigureY,1) + 20, Figure
+      sprite Block4, Columns(FigureX,1), Rows(FigureY,1) + 40, Figure
+
+      gosub SyncEndLoop
+
+   endif
+endif
+
+if Figure = 4
+   if Rotation = 2
+
+      sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+      sprite Block2, Columns(FigureX,1), Rows(FigureY,1) + 20, Figure
+      sprite Block3, Columns(FigureX,1) - 20, Rows(FigureY,1), Figure
+      sprite Block4, Columns(FigureX,1) - 40, Rows(FigureY,1), Figure
+
+      gosub SyncEndLoop
+
+   endif
+
+   if Rotation = 3
+
+      sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+      sprite Block2, Columns(FigureX,1) - 20, Rows(FigureY,1), Figure
+      sprite Block3, Columns(FigureX,1), Rows(FigureY,1) - 20, Figure
+      sprite Block4, Columns(FigureX,1), Rows(FigureY,1) - 40, Figure
+
+      gosub SyncEndLoop
+
+   endif
+
+   if Rotation = 4
+
+      sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+      sprite Block2, Columns(FigureX,1), Rows(FigureY,1) - 20, Figure
+      sprite Block3, Columns(FigureX,1) + 20, Rows(FigureY,1), Figure
+      sprite Block4, Columns(FigureX,1) + 40, Rows(FigureY,1), Figure
+
+      gosub SyncEndLoop
+
+   endif
+
+   if Rotation = 1
+
+      sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+      sprite Block2, Columns(FigureX,1) + 20, Rows(FigureY,1), Figure
+      sprite Block3, Columns(FigureX,1), Rows(FigureY,1) + 20, Figure
+      sprite Block4, Columns(FigureX,1), Rows(FigureY,1) + 40, Figure
+
+      gosub SyncEndLoop
+
+   endif
+endif
+
+if Figure = 5
+   if Rotation = 2
+
+      sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+      sprite Block2, Columns(FigureX,1) + 20, Rows(FigureY,1), Figure
+      sprite Block3, Columns(FigureX,1), Rows(FigureY,1) + 20, Figure
+      sprite Block4, Columns(FigureX,1) - 20, Rows(FigureY,1) + 20, Figure
+
+      gosub SyncEndLoop
+
+   endif
+
+   if Rotation = 1
+
+      sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+      sprite Block2, Columns(FigureX,1), Rows(FigureY,1) + 20, Figure
+      sprite Block3, Columns(FigureX,1) + 20, Rows(FigureY,1) + 20, Figure
+      sprite Block4, Columns(FigureX,1) + 20, Rows(FigureY,1) + 40, Figure
+
+      gosub SyncEndLoop
+
+   endif
+endif
+
+if Figure = 6
+   if Rotation = 2
+
+      sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+      sprite Block2, Columns(FigureX,1) + 20, Rows(FigureY,1), Figure
+      sprite Block3, Columns(FigureX,1) + 40, Rows(FigureY,1), Figure
+      sprite Block4, Columns(FigureX,1) + 60, Rows(FigureY,1), Figure
+
+      gosub SyncEndLoop
+
+   endif
+
+   if Rotation = 1
+
+      sprite Block1, Columns(FigureX,1), Rows(FigureY,1), Figure
+      sprite Block2, Columns(FigureX,1), Rows(FigureY,1) + 20, Figure
+      sprite Block3, Columns(FigureX,1), Rows(FigureY,1) + 40, Figure
+      sprite Block4, Columns(FigureX,1), Rows(FigureY,1) + 60, Figure
+
+      gosub SyncEndLoop
+
+   endif
+endif
+
+return
+
+Rem =======================================================================================================================
+Rem HighScore Set
+Rem =======================================================================================================================
+
+HighScore:
+
+sync
+
+wait 1000
+
+play sound 7
+clear entry buffer
+
+if Score > HighScoreTable(1)
+   HighScoreNames$(3) = HighScoreNames$(2)
+   HighScoreTable(3) = HighScoreTable(2)
+   HighScoreNames$(2) = HighScoreNames$(1)
+   HighScoreTable(2) = HighScoreTable(1)
+endif
+
+while Score > HighScoreTable(1)
+
+   if LEN(HighScoreNames$(1)) < 6 then HighScoreNames$(1) = Entry$()
+
+   paste image 18, 0, 0
+   set text font "Arial" : set text size 18
+   set text to bold
+
+   ink rgb(0,0,0), 0
+   text 282,299,HighScoreNames$(1)
+
+   set text to normal
+
+   set cursor 280, 431
+   print Level
+   set cursor 280, 525
+   print Score
+
+   if keystate(14) = 1
+      clear entry buffer
+      HighScoreNames$(1) = Entry$()
+   endif
+
+   if returnkey() = 1 and LEN(HighScoreNames$(1)) > 1
+      play sound 7
+      HighScoreTable(1) = Score
+      save array "C:/HighScoreTable.txt", HighScoreTable(3)
+      save array "C:/HighScoreNames.txt", HighScoreNames$(3)
+      for A = 1 to 12
+      for B = 1 to 28
+         if Grid(A,B,1) = 1 then delete sprite Grid(A,B,3)
+      next
+      next
+
+      delete sprite 5
+      delete sprite 6
+      delete sprite 7
+      delete sprite 8
+      delete sprite 9
+
+      goto StartProgram
+   endif
+
+   sync
+
+endwhile
+
+if Score > HighScoreTable(2) and Score < HighScoreTable(1)
+   HighScoreNames$(3) = HighScoreNames$(2)
+   HighScoreTable(3) = HighScoreTable(2)
+endif
+
+while Score > HighScoreTable(2) and Score < HighScoreTable(1)
+
+   if LEN(HighScoreNames$(2)) < 6 then HighScoreNames$(2) = Entry$()
+
+   paste image 18, 0, 0
+   set text font "Arial" : set text size 18
+   set text to bold
+
+   ink rgb(0,0,0), 0
+   text 282,299,HighScoreNames$(2)
+
+   set text to normal
+
+   set cursor 280, 431
+   print Level
+   set cursor 280, 525
+   print Score
+
+   if keystate(14) = 1
+      clear entry buffer
+      HighScoreNames$(2) = Entry$()
+   endif
+
+   if returnkey() = 1 and LEN(HighScoreNames$(2)) > 1
+      play sound 7
+      HighScoreTable(2) = Score
+      save array "C:/HighScoreTable.txt", HighScoreTable(3)
+      save array "C:/HighScoreNames.txt", HighScoreNames$(3)
+      for A = 1 to 12
+      for B = 1 to 28
+         if Grid(A,B,1) = 1 then delete sprite Grid(A,B,3)
+      next
+      next
+
+      delete sprite 5
+      delete sprite 6
+      delete sprite 7
+      delete sprite 8
+      delete sprite 9
+
+      goto StartProgram
+   endif
+
+   sync
+
+endwhile
+
+while Score > HighScoreTable(3) and Score < HighScoreTable(2)
+
+   if LEN(HighScoreNames$(3)) < 6 then HighScoreNames$(3) = Entry$()
+
+   paste image 18, 0, 0
+   set text font "Arial" : set text size 18
+   set text to bold
+
+   ink rgb(0,0,0), 0
+   text 282,299,HighScoreNames$(3)
+
+   set text to normal
+
+   set cursor 280, 431
+   print Level
+   set cursor 280, 525
+   print Score
+
+   if keystate(14) = 1
+      clear entry buffer
+      HighScoreNames$(3) = Entry$()
+   endif
+
+   if returnkey() = 1 and LEN(HighScoreNames$(3)) > 1
+      play sound 7
+      HighScoreTable(3) = Score
+      save array "C:/HighScoreTable.txt", HighScoreTable(3)
+      save array "C:/HighScoreNames.txt", HighScoreNames$(3)
+      for A = 1 to 12
+      for B = 1 to 28
+         if Grid(A,B,1) = 1 then delete sprite Grid(A,B,3)
+      next
+      next
+
+      delete sprite 5
+      delete sprite 6
+      delete sprite 7
+      delete sprite 8
+      delete sprite 9
+
+      goto StartProgram
+   endif
+
+   sync
+
+endwhile
+
+
+Rem =======================================================================================================================
+Rem Pause Function
+Rem =======================================================================================================================
+
+GamePause:
+
+do
+
+   hide sprite Block1
+   hide sprite Block2
+   hide sprite Block3
+   hide sprite Block4
+
+   paste image 10, 0, 0
+
+   set text font "Arial" : set text size 18
+   set text to normal
+
+   ink rgb(0,0,0), 0
+   set cursor 280, 431
+   print Level
+   set cursor 280, 525
+   print Score
+
+   sprite 9,62,260,11
+
+   if inkey$()="r"
+      goto ResumeGame
+   endif
+
+sync
+
+loop
+
+ResumeGame:
+
+delete sprite 9
+show all sprites
+
+goto EndLoop
