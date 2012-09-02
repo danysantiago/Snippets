@@ -1,0 +1,132 @@
+# depslib dependency file v1.0
+1318035209 source:c:\users\dany\codeblock workspace\projecteulier\main.cpp
+	<iostream>
+	"eulier_problems.h"
+	"my_functions.h"
+
+1318033978 c:\users\dany\codeblock workspace\projecteulier\eulier_problems.h
+
+1318025417 source:c:\users\dany\codeblock workspace\projecteulier\problem1.cpp
+	<stdio.h>
+	"eulier_problems.h"
+
+1318025829 c:\users\dany\codeblock workspace\projecteulier\my_functions.h
+
+1318034919 source:c:\users\dany\codeblock workspace\projecteulier\my_functions.cpp
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<math.h>
+	"my_functions.h"
+
+1318026289 source:c:\users\dany\codeblock workspace\projecteulier\problem2.cpp
+	<stdio.h>
+	"eulier_problems.h"
+	"my_functions.h"
+
+1318026289 source:c:\users\dany\codeblock workspace\projecteulier\problem3.cpp
+	<stdio.h>
+	"eulier_problems.h"
+	"my_functions.h"
+
+1318026289 source:c:\users\dany\codeblock workspace\projecteulier\problem4.cpp
+	<stdio.h>
+	"eulier_problems.h"
+	"my_functions.h"
+
+1318026289 source:c:\users\dany\codeblock workspace\projecteulier\problem5.cpp
+	<stdio.h>
+	"eulier_problems.h"
+
+1318026768 source:c:\users\dany\codeblock workspace\projecteulier\problem6.cpp
+	<stdio.h>
+	"eulier_problems.h"
+
+1318035110 source:c:\users\dany\codeblock workspace\projecteulier\problem7.cpp
+	<stdio.h>
+	"eulier_problems.h"
+	"my_functions.h"
+
+1318030171 source:c:\users\dany\codeblock workspace\projecteulier\problem8.cpp
+	<stdio.h>
+	"eulier_problems.h"
+
+1318033662 source:c:\users\dany\codeblock workspace\projecteulier\problem9.cpp
+	<stdio.h>
+	<math.h>
+	"eulier_problems.h"
+
+1318034969 source:c:\users\dany\codeblock workspace\projecteulier\problem10.cpp
+	<stdio.h>
+	<math.h>
+	"eulier_problems.h"
+	"my_functions.h"
+
+1318298723 source:e:\users\dany\documents\codeblocks projects\projecteulier\my_functions.cpp
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<math.h>
+	"my_functions.h"
+
+1318298723 e:\users\dany\documents\codeblocks projects\projecteulier\my_functions.h
+
+1318025417 source:e:\users\dany\documents\codeblocks projects\projecteulier\problem1.cpp
+	<stdio.h>
+	"eulier_problems.h"
+
+1318291049 e:\users\dany\documents\codeblocks projects\projecteulier\eulier_problems.h
+
+1318035404 source:e:\users\dany\documents\codeblocks projects\projecteulier\problem10.cpp
+	<stdio.h>
+	<math.h>
+	"eulier_problems.h"
+	"my_functions.h"
+
+1318026289 source:e:\users\dany\documents\codeblocks projects\projecteulier\problem2.cpp
+	<stdio.h>
+	"eulier_problems.h"
+	"my_functions.h"
+
+1318026289 source:e:\users\dany\documents\codeblocks projects\projecteulier\problem3.cpp
+	<stdio.h>
+	"eulier_problems.h"
+	"my_functions.h"
+
+1318026289 source:e:\users\dany\documents\codeblocks projects\projecteulier\problem4.cpp
+	<stdio.h>
+	"eulier_problems.h"
+	"my_functions.h"
+
+1318026289 source:e:\users\dany\documents\codeblocks projects\projecteulier\problem5.cpp
+	<stdio.h>
+	"eulier_problems.h"
+
+1318026768 source:e:\users\dany\documents\codeblocks projects\projecteulier\problem6.cpp
+	<stdio.h>
+	"eulier_problems.h"
+
+1319272916 source:e:\users\dany\documents\codeblocks projects\projecteulier\problem7.cpp
+	<stdio.h>
+	"eulier_problems.h"
+	"my_functions.h"
+
+1318030171 source:e:\users\dany\documents\codeblocks projects\projecteulier\problem8.cpp
+	<stdio.h>
+	"eulier_problems.h"
+
+1318033662 source:e:\users\dany\documents\codeblocks projects\projecteulier\problem9.cpp
+	<stdio.h>
+	<math.h>
+	"eulier_problems.h"
+
+1319272171 source:e:\users\dany\documents\codeblocks projects\projecteulier\main.cpp
+	<iostream>
+	"eulier_problems.h"
+	"my_functions.h"
+
+1318300405 source:e:\users\dany\documents\codeblocks projects\projecteulier\problem11.cpp
+	<stdio.h>
+	"eulier_problems.h"
+	"my_functions.h"
+
