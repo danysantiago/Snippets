@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 
 public class Sorting {
 
@@ -8,26 +10,33 @@ public class Sorting {
 		int[] array1 = RandomIntegerArrayCreator.createPositiveArray(0, 50, 100);
 		int[] array2 = array1.clone();
 		int[] array3 = array2.clone();
+		int[] array4 = array3.clone();
 		long startTime;
 		long stopTime;
 
 		startTime = System.nanoTime();
 		bubbleSort(array1);
 		stopTime = System.nanoTime();
-		System.out.println("Elapsed time: " + (stopTime - startTime));
+		System.out.println("BubblueSort, Elapsed time: " + (stopTime - startTime));
 		printArray(array1);
 		
 		startTime = System.nanoTime();
 		array2 = mergeSort(array2);
 		stopTime = System.nanoTime();
-		System.out.println("Elapsed time: " + (stopTime - startTime));
+		System.out.println("MergeSort, Elapsed time: " + (stopTime - startTime));
 		printArray(array2);
 		
 		startTime = System.nanoTime();
 		quickSort(array3);
 		stopTime = System.nanoTime();
-		System.out.println("Elapsed time: " + (stopTime - startTime));
+		System.out.println("QuickSort, Elapsed time: " + (stopTime - startTime));
 		printArray(array3);
+		
+		startTime = System.nanoTime();
+		Arrays.sort(array4);
+		stopTime = System.nanoTime();
+		System.out.println("Arrays.sort(), Elapsed time: " + (stopTime - startTime));
+		printArray(array4);
 		
 	}
 	
