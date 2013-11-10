@@ -29,7 +29,12 @@ public class MultiThread {
 		t3.start();
 		t4.start();
 		
-		while(t1.isAlive() && t2.isAlive() && t3.isAlive() && t4.isAlive()){
+		try {
+			t1.join();
+			t2.join();
+			t3.join();
+			t4.join();
+		} catch (InterruptedException e) {
 			
 		}
 		
